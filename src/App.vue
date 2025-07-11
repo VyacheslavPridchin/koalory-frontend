@@ -1,85 +1,59 @@
-<script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router'
-import HelloWorld from './components/HelloWorld.vue'
-</script>
-
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
-      </nav>
-    </div>
-  </header>
-
-  <RouterView />
+  <div>
+    <Transition name="fade" mode="out-in">
+      <router-view v-slot="{ Component }">
+        <component :is="Component" v-bind="screenProps" @next="goNext" />
+      </router-view>
+    </Transition>
+  </div>
 </template>
 
-<style scoped>
-header {
-  line-height: 1.5;
-  max-height: 100vh;
-}
+<script lang="ts" setup>
+import { ref, computed } from 'vue'
+import { useRouter } from 'vue-router'
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
+const router = useRouter()
 
-nav {
-  width: 100%;
-  font-size: 12px;
-  text-align: center;
-  margin-top: 2rem;
-}
+const formData = ref({
+  photo: null as File | null,
+  name: '',
+  age: null as number | null,
+  gender: '',
+  location: '',
+})
 
-nav a.router-link-exact-active {
-  color: var(--color-text);
-}
-
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
-}
-
-nav a {
-  display: inline-block;
-  padding: 0 1rem;
-  border-left: 1px solid var(--color-border);
-}
-
-nav a:first-of-type {
-  border: 0;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
+function goNext(payload?: any) {
+  if (payload && typeof payload === 'object') {
+    Object.assign(formData.value, payload)
   }
 
-  .logo {
-    margin: 0 2rem 0 0;
-  }
+  // Example route flow
+  const routeOrder = [
+    '/', '/auth', '/upload', '/preview', '/name', '/age', '/gender', '/location',
+    '/story-preview', '/pricing', '/confirm', '/interests', '/genre',
+    '/theme', '/generate', '/complete', '/bonus'
+  ]
 
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
+  const currentIndex = routeOrder.indexOf(router.currentRoute.value.path)
+  const nextRoute = routeOrder[currentIndex + 1]
+  if (nextRoute) router.push(nextRoute)
+}
 
-  nav {
-    text-align: left;
-    margin-left: -1rem;
-    font-size: 1rem;
+const screenProps = computed(() => ({
+  heroName: formData.value.name,
+  heroAge: formData.value.age,
+  heroGender: formData.value.gender,
+  heroLocation: formData.value.location,
+  photoFile: formData.value.photo,
+}))
+</script>
 
-    padding: 1rem 0;
-    margin-top: 1rem;
-  }
+
+<style>
+.fade-enter-active, .fade-leave-active {
+  transition: opacity .5s;
+}
+.fade-enter-from, .fade-leave-to {
+  opacity: 0;
 }
 </style>

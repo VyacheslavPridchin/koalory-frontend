@@ -1,35 +1,35 @@
 @import './base.css';
 
-#app {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  font-weight: normal;
+/* Твои глобальные стили */
+body {
+  font-family: 'Inter', 'Nunito', Arial, sans-serif; background: #f8f5ff; }
+.magical-bg {
+  background: linear-gradient(135deg, #b07fff 0%, #8269e7 60%, #e5d7ff 100%);
+  position: relative;
+  overflow: hidden;
 }
-
-a,
-.green {
-  text-decoration: none;
-  color: hsla(160, 100%, 37%, 1);
-  transition: 0.4s;
-  padding: 3px;
+.sparkle {
+  position: absolute; pointer-events: none; opacity: 0.2;
 }
-
-@media (hover: hover) {
-  a:hover {
-    background-color: hsla(160, 100%, 37%, 0.2);
-  }
+.progress-dot { width: 14px; height: 14px; border-radius: 999px; display: inline-block; margin-right: 6px;}
+.progress-dot.active { background: linear-gradient(90deg,#facc15,#a78bfa 80%);}
+.progress-dot.inactive { background: #e0e7ff;}
+.floating {
+  animation: floating 3s ease-in-out infinite;
 }
-
-@media (min-width: 1024px) {
-  body {
-    display: flex;
-    place-items: center;
-  }
-
-  #app {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    padding: 0 2rem;
-  }
+@keyframes floating {
+  0% { transform: translateY(0px);}
+  50% { transform: translateY(-14px);}
+  100% { transform: translateY(0px);}
+}
+/* Стили для карточек */
+.card {
+  background-color: white;
+  border-radius: 1rem; /* 16px */
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  padding: 2.5rem; /* 40px */
+  border: 1px solid #ede9fe;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
