@@ -53,7 +53,7 @@ const name = ref<string | null>(null)
 const jobId = ref<number>()
 const photoBlobUrl = ref<string>('')
 let intervalId: number
-
+const photoLink = ref<string | null>(null)
 
 async function fetchPhoto() {
   const id = jobId.value ?? -1
@@ -68,14 +68,24 @@ async function fetchPhoto() {
 
   // 2) иначе — запрашиваем у бэка, кэшируем и показываем
   try {
-    const { photo_link } = await getGeneratedPhoto(id)
-    if (!photo_link) throw new Error('not ready')
+
+    if(!photoLink.value) {
+      const {photo_link} = await getGeneratedPhoto(id)
+      if (!photo_link) throw new Error('not ready')
+
+      photoLink.value = photo_link
+    }
+    // кладём в кэш и получаем blob-URL
+    photoBlobUrl.value = await cachePhotoUrl(id, photoLink.value)
 
     clearInterval(intervalId)
-
-    // кладём в кэш и получаем blob-URL
-    photoBlobUrl.value = await cachePhotoUrl(id, photo_link)
   } catch {
+
+    if(!photoLink.value) {
+      console.log("Wait for image link...")
+    } else {
+      console.log(`Download image from '${photoLink.value}' error, try again...`)
+    }
     // сюда попадём, пока фото ещё не готово;
     // просто ждём следующего вызова через setInterval
   }
