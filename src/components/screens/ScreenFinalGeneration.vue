@@ -54,7 +54,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, onMounted } from 'vue'
+import {ref, computed, onMounted, onUnmounted} from 'vue'
 import {getCachedPhotoUrl} from "@/services/photoCacheService.ts";
 import {useRoute, useRouter} from "vue-router";
 import {launchStoryGeneration, requestStory, submitStoryDetail} from "@/services/api.ts";
@@ -66,6 +66,7 @@ const photoBlobUrl = ref<string>()
 const jobId = ref<number>()
 const route = useRoute()
 const router = useRouter()
+const iv = ref<number>()
 
 onMounted(async () => {
   name.value = localStorage.getItem('name')
@@ -88,12 +89,12 @@ onMounted(async () => {
 
   await launchStoryGeneration({ job_id: jobId.value ?? -1} )
 
-  const iv = setInterval(async () => {
+  iv.value = setInterval(async () => {
     try {
       const result = await requestStory(jobId.value ?? -1)
       progress.value = result.progress;
       if (result.progress === 100) {
-        clearInterval(iv)
+        clearInterval(iv.value)
 
         await router.push('/story/complete?job_id=' + jobId.value)
         // onStoryReady(result)
@@ -102,7 +103,10 @@ onMounted(async () => {
       console.error("Error polling story:", e)
     }
   }, 1000)
+})
 
+onUnmounted(() => {
+  clearInterval(iv.value)
 })
 
 // конфиг этапов

@@ -290,4 +290,15 @@ input[type=range]::-moz-range-track {
   background: #d1d5db;
   border-radius: 2px;
 }
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type='number'] {
+  -moz-appearance: textfield;
+}
+
 </style>

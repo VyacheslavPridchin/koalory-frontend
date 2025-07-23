@@ -7,11 +7,7 @@
         </h2>
         <div class="w-full mb-2 rounded-2xl shadow-lg border-4 border-white overflow-hidden relative" style="padding-top:56.25%">
           <transition name="fade">
-            <div
-                v-if="!photoBlobUrl"
-                class="loading-banner absolute top-0 left-0 w-full h-full flex items-center justify-center"
-            >
-              Conjuring your hero…
+            <div v-if="!photoBlobUrl"  class="loading-banner absolute top-0 left-0 w-full h-full flex items-center justify-center">
             </div>
           </transition>
           <transition name="fade">
@@ -107,7 +103,7 @@ onMounted(() => {
 
   // сразу пробуем и запускаем интервал повторных попыток
   fetchPhoto()
-  intervalId = window.setInterval(fetchPhoto, 2000)
+  intervalId = window.setInterval(fetchPhoto, 5000)
 })
 
 async function continueStory(): Promise<void> {
