@@ -85,11 +85,14 @@
                   <div
                       class="px-2 py-0.5 rounded-full text-[10px] font-medium whitespace-nowrap mt-0.5"
                       :class="tale.progress === 'finished'
-        ? 'bg-green-100 text-green-700'
-        : 'bg-red-100 text-red-700'"
+    ? 'bg-green-100 text-green-700'
+    : tale.progress === 'in_progress'
+    ? 'bg-yellow-100 text-yellow-700'
+    : 'bg-red-100 text-red-700'"
                   >
-                    {{ tale.progress === 'finished' ? 'Complete' : 'Unfinished' }}
+                    {{ tale.progress === 'finished' ? 'Complete' : tale.progress === 'in_progress' ? 'In Progress' : 'Unfinished' }}
                   </div>
+
                 </div>
               </div>
 
@@ -141,6 +144,9 @@ function openTale(tale: Tale) {
       break;
     case 'story_message':
       router.push('/story/theme?job_id=' + tale.id);
+      break;
+    case 'in_progress':
+      router.push('/story/generate?job_id=' + tale.id);
       break;
     case 'finished':
       router.push('/story/complete?job_id=' + tale.id);
