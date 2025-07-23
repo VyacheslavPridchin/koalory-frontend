@@ -75,8 +75,24 @@
                 </transition>
               </div>
 
-              <div class="text-sm font-semibold text-gray-900 leading-snug">{{ tale.title }}</div>
-              <div class="text-xs text-gray-500">{{ tale.genre }}</div>
+              <div class="flex flex-col justify-start items-stretch flex-1">
+                <div class="flex justify-between items-start gap-2">
+                  <div class="flex-1 min-w-0">
+                    <div class="text-sm font-semibold text-gray-900 leading-snug line-clamp-2">
+                      {{ tale.title }}
+                    </div>
+                  </div>
+                  <div
+                      class="px-2 py-0.5 rounded-full text-[10px] font-medium whitespace-nowrap mt-0.5"
+                      :class="tale.progress === 'finished'
+        ? 'bg-green-100 text-green-700'
+        : 'bg-red-100 text-red-700'"
+                  >
+                    {{ tale.progress === 'finished' ? 'Complete' : 'Unfinished' }}
+                  </div>
+                </div>
+              </div>
+
             </div>
           </div>
       </div>

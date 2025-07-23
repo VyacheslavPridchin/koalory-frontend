@@ -40,7 +40,7 @@
 <script setup lang="ts">
 import {onBeforeUnmount, onMounted, ref} from 'vue'
 import {useRoute, useRouter} from 'vue-router'
-import {getAvailableStories, getGeneratedPhoto} from '@/services/api'
+import {canContinueStories, getAvailableStories, getGeneratedPhoto} from '@/services/api'
 import {cachePhotoUrl, getCachedPhotoUrl} from '@/services/photoCacheService'
 
 const router = useRouter()
@@ -107,7 +107,7 @@ onMounted(() => {
 })
 
 async function continueStory(): Promise<void> {
-  const { available_stories } = await getAvailableStories()
+  const { available_stories } = await canContinueStories()
   const target = available_stories > 0 ? '/story/interests' : '/pricing'
   await router.push({ path: target, query: { job_id: String(jobId.value) } })
 }

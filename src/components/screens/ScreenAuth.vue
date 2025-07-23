@@ -82,7 +82,7 @@
 import {onMounted, ref} from 'vue'
 import {
   emailRegister,
-  emailLogin, updateAuthStatus, isAuth
+  emailLogin, updateAuthStatus, isAuth, getAvailableStories
 } from '@/services/api'
 import {useRouter} from "vue-router";
 import { sha256Hex } from '@/utils/crypto'
@@ -133,8 +133,11 @@ async function onEmailSubmit() {
     localStorage.setItem('email', email.value)
     updateAuthStatus()
 
-    await router.push('/account')
-
+    if((await getAvailableStories()).available_stories > 0)
+        await router.push('/story/setup')
+    else
+      await router.push('/account')
+    
     // emit next or redirect
     // e.g. router.push or emit('next')
   } catch (e: any) {

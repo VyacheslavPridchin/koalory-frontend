@@ -6,7 +6,7 @@
 import { onMounted } from 'vue'
 import {
   googleRegister,
-  googleLogin, updateAuthStatus,
+  googleLogin, updateAuthStatus, getAvailableStories,
 } from '@/services/api'
 import {useRouter} from "vue-router";
 
@@ -35,7 +35,11 @@ onMounted(async () => {
     localStorage.setItem('refresh_token', refresh_token)
     updateAuthStatus()
 
-    await router.push('/story/setup')
+    if((await getAvailableStories()).available_stories > 0)
+      await router.push('/story/setup')
+    else
+      await router.push('/account')
+
     return
   } catch { }
 
@@ -45,7 +49,11 @@ onMounted(async () => {
     localStorage.setItem('refresh_token', refresh_token)
     updateAuthStatus()
 
-    await router.push('/story/setup')
+    if((await getAvailableStories()).available_stories > 0)
+      await router.push('/story/setup')
+    else
+      await router.push('/account')
+
     return
     // emit next or redirect
   } catch {

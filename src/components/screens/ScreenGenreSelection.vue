@@ -39,7 +39,7 @@
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue'
 import {useRoute, useRouter} from "vue-router";
-import {submitStoryDetail} from "@/services/api.ts";
+import {canContinueStories, submitStoryDetail} from "@/services/api.ts";
 
 const selectedGenre = ref<{ value: string, label: string }>({value: "", label: ""})
 const name = ref<string | null>(null)
@@ -59,6 +59,10 @@ onMounted(async () => {
     await router.push('/story/setup')
     return
   }
+
+  const { available_stories } = await canContinueStories()
+  if(available_stories == 0) await router.push('/pricing')
+
 })
 
 const options = [
@@ -77,14 +81,19 @@ function select(value: { value: string, label: string }) {
 }
 
 async function saveGenre() {
+  const { available_stories } = await canContinueStories()
+  let target = selectedGenre.value.value === 'custom' ? '/story/custom-theme' : '/story/generate'
+
+  if(available_stories == 0){
+    target = '/pricing';
+    await router.push({ path: target, query: { job_id: String(jobId.value) }});
+    return
+  }
+
   localStorage.setItem("genre", selectedGenre.value.label);
   await submitStoryDetail( { job_id: jobId.value ?? -1, field_name: "story_theme", value: selectedGenre.value.label });
 
-  if(selectedGenre.value.value === 'custom')
-    await router.push({ path: '/story/custom-theme', query: { job_id: String(jobId.value) }});
-  else
-    await router.push({ path: '/story/generate', query: { job_id: String(jobId.value) }})
-
+  await router.push({ path: target, query: { job_id: String(jobId.value) }});
 }
 </script>
 

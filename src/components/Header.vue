@@ -88,9 +88,8 @@ const onMenuClick = () => {
 }
 
 .menu-icon {
-  width: 20px;
-  height: 20px;
-  filter: brightness(0) saturate(100%) invert(52%) sepia(86%) saturate(528%) hue-rotate(359deg) brightness(105%) contrast(101%);
+  width: 25px;
+  height: 25px;
 }
 
 .fade-enter-active, .fade-leave-active {

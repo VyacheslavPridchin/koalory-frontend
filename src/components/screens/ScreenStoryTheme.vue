@@ -50,7 +50,7 @@
 import { onMounted, ref } from 'vue'
 import {getCachedPhotoUrl} from "@/services/photoCacheService.ts";
 import {useRoute, useRouter} from "vue-router";
-import {submitStoryDetail} from "@/services/api.ts";
+import {canContinueStories, submitStoryDetail} from "@/services/api.ts";
 
 const text = ref('')
 const name = ref<string | null>(null)
@@ -77,17 +77,28 @@ onMounted(async () => {
     photoBlobUrl.value = cached
     return
   }
+
+  const { available_stories } = await canContinueStories()
+  if(available_stories == 0) await router.push('/pricing')
 });
 
 async function onContinue() {
-  localStorage.setItem("theme", text.value);
-  await submitStoryDetail( { job_id: jobId.value ?? -1, field_name: "story_message", value: text.value });
+  const { available_stories } = await canContinueStories()
+  const target = available_stories > 0 ? '/story/generate' : '/pricing'
 
-  await router.push({ path: "/story/generate", query: { job_id: String(jobId.value) }})
+  if(available_stories > 0){
+    localStorage.setItem("theme", text.value);
+    await submitStoryDetail( { job_id: jobId.value ?? -1, field_name: "story_message", value: text.value });
+  }
+
+  await router.push({ path: target, query: { job_id: String(jobId.value) }})
 }
 
 async function onSkip() {
-  await router.push({ path: "/story/generate", query: { job_id: String(jobId.value) }})
+  const { available_stories } = await canContinueStories()
+  const target = available_stories > 0 ? '/story/generate' : '/pricing'
+
+  await router.push({ path: target, query: { job_id: String(jobId.value) }})
 }
 </script>
 

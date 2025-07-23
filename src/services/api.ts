@@ -158,6 +158,15 @@ export async function getAvailableStories(): Promise<AvailableStoriesResponse> {
     return unwrap(res)
 }
 
+// Story retrieval
+export async function canContinueStories(): Promise<AvailableStoriesResponse> {
+    const res = await api.get<ApiResponse<AvailableStoriesResponse>>(
+        '/story/can_continue_story',
+    )
+    return unwrap(res)
+}
+
+
 export async function launchStoryGeneration (data: LaunchStoryGenerationRequest): Promise<SuccessfulSubmission> {
     const res = await api.post<ApiResponse<SuccessfulSubmission>>(`/story/launch_story_generation?job_id=${data.job_id}`)
     return unwrap(res)

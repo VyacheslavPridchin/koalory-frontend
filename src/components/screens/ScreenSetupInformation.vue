@@ -1,5 +1,5 @@
 <template>
-  <section class="justify-square flex flex-col px-4 py-6 bg-[#F2F1EE]">
+  <section class="justify-square flex flex-col px-4 py-6 ">
     <div class="flex justify-center w-full">
       <div class="w-full max-w-4xl card">
         <!-- Header -->

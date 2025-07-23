@@ -57,7 +57,7 @@
 import {ref, computed, onMounted, onUnmounted} from 'vue'
 import {getCachedPhotoUrl} from "@/services/photoCacheService.ts";
 import {useRoute, useRouter} from "vue-router";
-import {launchStoryGeneration, requestStory, submitStoryDetail} from "@/services/api.ts";
+import {canContinueStories, launchStoryGeneration, requestStory, submitStoryDetail} from "@/services/api.ts";
 
 const name = ref<string | null>(null)
 const genre = ref<string | null>(null)
@@ -85,6 +85,12 @@ onMounted(async () => {
   const cached = await getCachedPhotoUrl(jobId.value)
   if (cached) {
     photoBlobUrl.value = cached
+  }
+
+  const { available_stories } = await canContinueStories()
+  if(available_stories == 0) {
+    await router.push('/pricing')
+    return
   }
 
   await launchStoryGeneration({ job_id: jobId.value ?? -1} )
