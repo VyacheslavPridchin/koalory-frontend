@@ -79,10 +79,10 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue'
+import {onMounted, ref} from 'vue'
 import {
   emailRegister,
-  emailLogin, updateAuthStatus
+  emailLogin, updateAuthStatus, isAuth
 } from '@/services/api'
 import {useRouter} from "vue-router";
 import { sha256Hex } from '@/utils/crypto'
@@ -146,6 +146,12 @@ async function onEmailSubmit() {
             : 'Login failed')
   }
 }
+
+onMounted(async () => {
+  if(isAuth.value) {
+    await router.push('/account')
+  }
+})
 </script>
 
 <style scoped>
