@@ -21,13 +21,16 @@
         </div>
 
         <!-- Cards Grid -->
-        <div class="grid grid-cols-[repeat(auto-fit,minmax(10rem,1fr))] gap-4 sm:gap-6 max-w-6xl mx-auto items-stretch">
+        <div
+            class="grid grid-cols-[repeat(auto-fit,minmax(10rem,1fr))] gap-4 sm:gap-6 max-w-6xl mx-auto items-stretch"
+        >
           <!-- Create New Tale -->
-          <div v-if="availableToCreate > 0"
+          <div
+              v-if="availableToCreate > 0"
               @click="createNewTale"
               class="bg-[#F5F3FF] border-2 border-dashed border-indigo-200 rounded-xl flex flex-col items-center justify-center text-indigo-600 cursor-pointer
-                   shadow-sm hover:shadow-md transition duration-200 ease-out
-                   h-full min-h-[260px] hover:-translate-y-1 hover:scale-[1.03] active:scale-[0.97]"
+              shadow-sm hover:shadow-md transition duration-200 ease-out
+              h-full min-h-[260px] hover:-translate-y-1 hover:scale-[1.03] active:scale-[0.97]"
           >
             <div class="bg-white rounded-full shadow w-16 h-16 flex items-center justify-center mb-2 text-4xl">
               +
@@ -39,8 +42,8 @@
           <div
               @click="buyMoreTales"
               class="bg-[#FEFCE8] border-2 border-dashed border-yellow-300 rounded-xl flex flex-col items-center justify-center text-yellow-600 cursor-pointer
-                   shadow-sm hover:shadow-md transition duration-200 ease-out
-                   h-full min-h-[260px] hover:-translate-y-1 hover:scale-[1.03] active:scale-[0.97]"
+              shadow-sm hover:shadow-md transition duration-200 ease-out
+              h-full min-h-[260px] hover:-translate-y-1 hover:scale-[1.03] active:scale-[0.97]"
           >
             <div class="bg-white rounded-full shadow w-16 h-16 flex items-center justify-center mb-2 text-3xl">
               🛒
@@ -54,19 +57,21 @@
               :key="tale.id"
               @click="openTale(tale)"
               class="bg-white rounded-xl shadow p-3 flex flex-col justify-between cursor-pointer
-                   h-full min-h-[260px] transition duration-200 ease-out
-                   hover:-translate-y-1 hover:scale-[1.03] active:scale-[0.97]"
+              h-full min-h-[260px] transition duration-200 ease-out
+              hover:-translate-y-1 hover:scale-[1.03] active:scale-[0.97]"
           >
             <div
                 class="rounded-md aspect-[5/6] mb-3 relative overflow-hidden"
                 :style="{ backgroundColor: randomColor() }"
             >
-              <img
-                  v-if="tale.image"
-                  :src="tale.image"
-                  alt="Tale cover"
-                  class="absolute top-0 left-0 w-full h-full object-cover"
-              />
+              <transition name="fade">
+                <img
+                    v-if="tale.imageVisible"
+                    :src="tale.imageUrl"
+                    alt="Tale cover"
+                    class="absolute top-0 left-0 w-full h-full object-cover"
+                />
+              </transition>
             </div>
 
             <div class="text-sm font-semibold text-gray-900 leading-snug">{{ tale.title }}</div>
@@ -78,12 +83,11 @@
   </section>
 </template>
 
-<script setup lang="ts">
-import {onMounted, ref} from 'vue';
-import {useRouter} from "vue-router";
-import {getAllStories, getAvailableStories, isAuth, logOut} from "@/services/api.ts";
+<script setup lang="ts">import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import { getAllStories, getAvailableStories, logOut } from '@/services/api.ts';
 
-const router = useRouter()
+const router = useRouter();
 const availableToCreate = ref<number>(0);
 
 const colors = ['#D5C8FB', '#FBD0D8', '#FDE57C', '#A4F0C1', '#C2F2F2', '#FFDADA', '#FFE9A3'];
@@ -92,11 +96,19 @@ function randomColor() {
   return colors[Math.floor(Math.random() * colors.length)];
 }
 
-const tales = ref<{id: number; title: string; progress: string; genre: string; image: string}[]>([]);
+type Tale = {
+  id: number;
+  title: string;
+  progress: string;
+  genre: string;
+  image: string;
+  imageVisible: boolean;
+  imageUrl: string; // object URL
+};
 
-function openTale(tale: {id: number; title: string; progress: string; genre: string; image: string}) {
-  console.log('Open tale with ID:', tale.id);
+const tales = ref<Tale[]>([]);
 
+function openTale(tale: Tale) {
   switch (tale.progress) {
     case 'first_screen':
       router.push('/story/setup?job_id=' + tale.id);
@@ -117,34 +129,64 @@ function openTale(tale: {id: number; title: string; progress: string; genre: str
 }
 
 function createNewTale() {
-  console.log('Create new tale');
   router.push('/story/setup');
 }
 
 function buyMoreTales() {
-  console.log('Buy more tales');
   router.push('/pricing');
-
-  // open modal or go to store
 }
 
 function onLogout() {
-  console.log('Logout clicked');
-  // Очистить токен/выйти
   logOut();
+}
+
+function isValidImageUrl(url: string): boolean {
+  return /^https?:\/\//.test(url); // только абсолютные HTTP(S)
 }
 
 onMounted(async () => {
   availableToCreate.value = (await getAvailableStories()).available_stories;
   const stories = await getAllStories();
 
-  tales.value = stories.stories.map((s, i) => ({
-    id: s.job_id, // или другое уникальное значение
+  tales.value = stories.stories.map((s) => ({
+    id: s.job_id,
     progress: s.progress,
     title: s.title ?? 'Без названия',
-    genre: s.theme ?? 'Story', // если нет жанра — укажи заглушку
-    image: s.image ?? ''
+    genre: s.theme ?? 'Story',
+    image: s.image ?? '',
+    imageVisible: false,
+    imageUrl: ''
   }));
+
+  // Предзагрузка с Blob
+  for (const tale of tales.value) {
+    if (!tale.image || !isValidImageUrl(tale.image)) continue;
+
+    try {
+      const res = await fetch(tale.image);
+
+      const blob = await res.blob();
+      if (blob.size === 0) throw new Error('Empty image blob');
+
+      tale.imageUrl = URL.createObjectURL(blob);
+      tale.imageVisible = true;
+    } catch (err) {
+      console.warn(`Image failed for tale ${tale.id}:`, err);
+      tale.imageVisible = false;
+    }
+  }
+
 });
 
 </script>
+
+<style scoped>
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.4s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+</style>
