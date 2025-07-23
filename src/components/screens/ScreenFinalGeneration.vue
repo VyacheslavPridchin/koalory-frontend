@@ -94,6 +94,8 @@ onMounted(async () => {
       progress.value = result.progress;
       if (result.progress === 100) {
         clearInterval(iv)
+
+        await router.push('/story/complete?job_id=' + jobId.value)
         // onStoryReady(result)
       }
     } catch (e) {
