@@ -6,7 +6,7 @@
 import { onMounted } from 'vue'
 import {
   googleRegister,
-  googleLogin,
+  googleLogin, updateAuthStatus,
 } from '@/services/api'
 import {useRouter} from "vue-router";
 
@@ -33,6 +33,7 @@ onMounted(async () => {
     const { access_token, refresh_token } = await googleRegister({ token: idToken })
     localStorage.setItem('access_token', access_token)
     localStorage.setItem('refresh_token', refresh_token)
+    updateAuthStatus()
 
     await router.push('/story/setup')
     return
@@ -42,6 +43,7 @@ onMounted(async () => {
     const { access_token, refresh_token } = await googleLogin({ token: idToken })
     localStorage.setItem('access_token', access_token)
     localStorage.setItem('refresh_token', refresh_token)
+    updateAuthStatus()
 
     await router.push('/story/setup')
     return
