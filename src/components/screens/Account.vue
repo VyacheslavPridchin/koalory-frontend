@@ -155,7 +155,7 @@ onMounted(async () => {
   tales.value = stories.stories.map((s) => ({
     id: s.job_id,
     progress: s.progress,
-    title: s.title ?? 'Без названия',
+    title: s.title ?? 'Untitled',
     genre: s.theme ?? 'Story',
     image: s.image ?? '',
     imageVisible: false,
