@@ -1,8 +1,15 @@
 @import './base.css';
 
 /* Твои глобальные стили */
+
+html, body {
+  height: auto;
+  min-height: 100%;
+  overflow-y: auto;
+}
+
 body {
-  font-family: 'Inter', 'Nunito', Arial, sans-serif; background: #f8f5ff; }
+  font-family: 'Inter', 'Nunito', Arial, sans-serif;  background-color: #F2F1EE; }
 .magical-bg {
   background: linear-gradient(135deg, #b07fff 0%, #8269e7 60%, #e5d7ff 100%);
   position: relative;
@@ -12,7 +19,7 @@ body {
   position: absolute; pointer-events: none; opacity: 0.2;
 }
 .progress-dot { width: 14px; height: 14px; border-radius: 999px; display: inline-block; margin-right: 6px;}
-.progress-dot.active { background: linear-gradient(90deg,#facc15,#a78bfa 80%);}
+.progress-dot.active { background: #FC7B00;}
 .progress-dot.inactive { background: #e0e7ff;}
 .floating {
   animation: floating 3s ease-in-out infinite;
@@ -25,11 +32,36 @@ body {
 /* Стили для карточек */
 .card {
   background-color: white;
-  border-radius: 1rem; /* 16px */
+  border-radius: 2.5rem;
   box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-  padding: 2.5rem; /* 40px */
-  border: 1px solid #ede9fe;
-  display: flex;
+  border: 1px solid #E5E7EB;
+  padding: 2.5rem;
   flex-direction: column;
   align-items: center;
 }
+
+@media (max-aspect-ratio: 1/1) {
+  .card {
+    border-radius: 1rem;
+    padding: 1.5rem;
+  }
+}
+.logo {
+  top: 1.5rem;
+  width: 90px;
+  height: auto;
+}
+
+@media (min-aspect-ratio: 1/1) {
+  .justify-square {
+    justify-content: center;
+    min-height: 100vh;
+  }
+}
+
+@media (max-aspect-ratio: 1/1) {
+  .justify-square {
+    padding-top: 0;
+  }
+}
+

@@ -1,5 +1,8 @@
 <template>
-  <section class="flex flex-col justify-center items-center min-h-screen px-6 py-16 bg-gradient-to-tl from-pink-50 via-white to-violet-100">
+  <section class="flex flex-col justify-center items-center min-h-screen px-6 py-16" style="background-color: #F2F1EE">
+    <div class="logo-wrapper">
+      <img src="../../../assets/logo.svg" alt="Logo" class="logo" />
+    </div>
     <div class="card max-w-md w-full relative">
       <div class=" right-8 mb-6 w-28 h-28 rounded-full bg-violet-50 border-4 border-violet-100 flex items-center justify-center overflow-hidden">
         <img src="https://i.pravatar.cc/150?img=11" alt="Character Preview" class="w-full h-full object-cover" />
@@ -7,11 +10,11 @@
 
       <h2 class="text-2xl font-bold font-[Nunito] text-center mb-2">Perfect! Now...</h2>
       <p class="text-lg text-gray-700 text-center mb-4">
-        How old is <span class="font-semibold text-violet-700">{{ name }}</span>?
+        How old is <span class="font-semibold text-orange-500">{{ name }}</span>?
       </p>
       <div class="grid grid-cols-5 gap-3 mb-4">
         <button v-for="n in 10" :key="n" @click="setAge(n + 2)"
-                :class="[ 'rounded-lg py-3 px-2 font-bold text-xl transition', age === n + 2 ? 'bg-violet-200 ring-4 ring-violet-400' : 'bg-violet-100 hover:bg-violet-200'
+                :class="[ 'rounded-lg py-3 px-2 font-bold text-xl transition', age === n + 2 ? 'bg-orange-200 ring-4 ring-orange-400' : 'bg-orange-100 hover:bg-orange-200'
     ]"
         >
           {{ n + 2 }}
@@ -33,7 +36,7 @@
       <p class="text-sm text-gray-500 mb-4 text-center">
         Don't worry – every age gets an amazing adventure!
       </p>
-      <button :disabled="!age" @click="() => $emit('next', { age })" class="w-full text-center bg-violet-600 hover:bg-violet-500 text-white font-bold py-4 rounded-lg text-lg shadow">Continue</button>
+      <button :disabled="!age" @click="() => $emit('next', { age })" class="w-full text-center  bg-orange-500 hover:bg-orange-600  text-white font-bold py-4 rounded-lg text-lg shadow">Continue</button>
       <div class="flex justify-center items-center gap-1 mt-8">
         <span v-for="(dot, index) in totalDots" :key="index" :class="['progress-dot', index < activeDots ? 'active' : 'inactive']"></span>
       </div>
