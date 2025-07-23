@@ -128,6 +128,7 @@ const isLoading = ref(false)
 
 onMounted(async () => {
   if(!isAuth.value) await router.push('/auth')
+  if((await getAvailableStories()).available_stories == 0) await router.push('/account')
 })
 
 function handleFile(file: File) {
@@ -192,9 +193,12 @@ const activeBtn =
 const inactiveBtn =
     'flex-1 py-2 rounded-xl shadow bg-white border border-gray-300 hover:bg-gray-50 transition'
 
-import {createStory, isAuth, submitFirstScreen} from '@/services/api'
+import {createStory, getAvailableStories, isAuth, submitFirstScreen} from '@/services/api'
 import type { FirstScreenPayload } from '@/services/api'
-import {useRouter} from "vue-router";
+import {useRoute, useRouter} from "vue-router";
+const jobId = ref<number>()
+
+const route = useRoute()
 
 async function createHero() {
   if (!selected.value || !name.value || !gender.value || !age.value || !location.value) return
@@ -210,9 +214,21 @@ async function createHero() {
     localStorage.setItem('location', location.value)
 
     try {
-      const { job_id } = await createStory()
+
+      const raw = route.query.job_id
+      const query_job_id = Array.isArray(raw)
+          ? Number(raw[0])
+          : Number(raw)
+
+      if (query_job_id) {
+        jobId.value = query_job_id
+      } else {
+        const { job_id } = await createStory()
+        jobId.value = job_id
+      }
+
       const payload: FirstScreenPayload = {
-        job_id,
+        job_id: jobId.value,
         name: name.value,
         gender: gender.value,
         age: age.value ?? 5,
@@ -221,7 +237,7 @@ async function createHero() {
       }
 
       await submitFirstScreen(payload)
-      await router.push({ path: '/story/preview', query: { job_id: String(job_id) } })
+      await router.push({ path: '/story/preview', query: { job_id: String(jobId.value) } })
     } catch (err: any) {
       console.error(err.response?.data?.detail || 'Ошибка при отправке данных')
     } finally {

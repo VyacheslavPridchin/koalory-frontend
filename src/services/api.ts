@@ -52,7 +52,7 @@ export interface StoryResponse {
     text: string[] | null
     images: string[] | null
 }
-export interface StorySummary {  job_id: number; title: string | null; theme: string | null; image: string | null; }
+export interface StorySummary {  job_id: number; title: string | null; progress: string; theme: string | null; image: string | null; }
 export interface StoriesResponse { stories: StorySummary[] }
 
 // Auth endpoints

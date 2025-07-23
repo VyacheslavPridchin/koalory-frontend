@@ -52,7 +52,7 @@
           <div
               v-for="(tale, idx) in tales"
               :key="tale.id"
-              @click="openTale(tale.id)"
+              @click="openTale(tale)"
               class="bg-white rounded-xl shadow p-3 flex flex-col justify-between cursor-pointer
                    h-full min-h-[260px] transition duration-200 ease-out
                    hover:-translate-y-1 hover:scale-[1.03] active:scale-[0.97]"
@@ -92,13 +92,28 @@ function randomColor() {
   return colors[Math.floor(Math.random() * colors.length)];
 }
 
-const tales = ref<{id: number; title: string; genre: string; image: string}[]>([]);
+const tales = ref<{id: number; title: string; progress: string; genre: string; image: string}[]>([]);
 
-function openTale(id: number) {
-  console.log('Open tale with ID:', id);
-  router.push('/story/complete?job_id=' + id);
+function openTale(tale: {id: number; title: string; progress: string; genre: string; image: string}) {
+  console.log('Open tale with ID:', tale.id);
 
-  // router.push(`/tale/${id}`);
+  switch (tale.progress) {
+    case 'first_screen':
+      router.push('/story/setup?job_id=' + tale.id);
+      break;
+    case 'generated_photo':
+      router.push('/story/preview?job_id=' + tale.id);
+      break;
+    case 'story_theme':
+      router.push('/story/genre?job_id=' + tale.id);
+      break;
+    case 'story_message':
+      router.push('/story/theme?job_id=' + tale.id);
+      break;
+    case 'finished':
+      router.push('/story/complete?job_id=' + tale.id);
+      break;
+  }
 }
 
 function createNewTale() {
@@ -125,6 +140,7 @@ onMounted(async () => {
 
   tales.value = stories.stories.map((s, i) => ({
     id: s.job_id, // или другое уникальное значение
+    progress: s.progress,
     title: s.title ?? 'Без названия',
     genre: s.theme ?? 'Story', // если нет жанра — укажи заглушку
     image: s.image ?? ''
