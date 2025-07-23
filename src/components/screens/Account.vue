@@ -158,25 +158,27 @@ onMounted(async () => {
     imageUrl: ''
   }));
 
-  // Предзагрузка с Blob
-  for (const tale of tales.value) {
-    if (!tale.image || !isValidImageUrl(tale.image)) continue;
-
-    try {
-      const res = await fetch(tale.image);
-
-      const blob = await res.blob();
-      if (blob.size === 0) throw new Error('Empty image blob');
-
-      tale.imageUrl = URL.createObjectURL(blob);
-      tale.imageVisible = true;
-    } catch (err) {
-      console.warn(`Image failed for tale ${tale.id}:`, err);
-      tale.imageVisible = false;
-    }
-  }
-
+  // Параллельно загружаем изображения
+  await Promise.allSettled(tales.value.map(preloadImage));
 });
+
+async function preloadImage(tale: Tale): Promise<void> {
+  if (!tale.image || !isValidImageUrl(tale.image)) return;
+
+  try {
+    const res = await fetch(tale.image);
+
+    const blob = await res.blob();
+    if (blob.size === 0) throw new Error('Empty image blob');
+
+    tale.imageUrl = URL.createObjectURL(blob);
+    tale.imageVisible = true;
+  } catch (err) {
+    console.warn(`Image preload failed for tale ${tale.id}:`, err);
+    tale.imageVisible = false;
+  }
+}
+
 
 </script>
 
