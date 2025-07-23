@@ -23,7 +23,7 @@
         <!-- Cards Grid -->
         <div class="grid grid-cols-[repeat(auto-fit,minmax(10rem,1fr))] gap-4 sm:gap-6 max-w-6xl mx-auto items-stretch">
           <!-- Create New Tale -->
-          <div
+          <div v-if="availableToCreate > 0"
               @click="createNewTale"
               class="bg-[#F5F3FF] border-2 border-dashed border-indigo-200 rounded-xl flex flex-col items-center justify-center text-indigo-600 cursor-pointer
                    shadow-sm hover:shadow-md transition duration-200 ease-out
