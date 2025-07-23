@@ -165,7 +165,7 @@ function downloadPDF(): void {
 
 async function createAnother(): Promise<void> {
   if((await getAvailableStories()).available_stories == 0){
-    await router.push({ path: '/story/bonus', query: { job_id: String(jobId.value) }})
+    await router.push('/pricing')
   } else {
     await router.push('/story/setup')
   }

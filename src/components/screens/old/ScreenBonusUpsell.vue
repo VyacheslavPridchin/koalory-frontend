@@ -18,7 +18,7 @@
         <!-- 3-story bundle -->
           <div class="relative h-80 w-full flex flex-col justify-between rounded-2xl border-2 border-[#FC7B00] bg-white shadow-panel p-6">
           <span class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 px-4 py-1 flex items-center">
-            <img src="@/assets/best-value-panel.svg" alt="Best Value" style="transform: rotateZ(-2deg); scale: 1.2"/>
+            <img src="../../../assets/best-value-panel.svg" alt="Best Value" style="transform: rotateZ(-2deg); scale: 1.2"/>
           </span>
           <div>
             <h3 class="font-extrabold text-2xl text-[#FC7B00]">3-Story Bundle</h3>
@@ -79,7 +79,6 @@ const name = ref<string | null>(null)
 
 async function buyBundle(bundle: string): Promise<void> {
   const payload: GeneratePaymentLinkRequest = { option: bundle }
-  if(jobId) payload.job_id = jobId.value;
 
   try {
     console.log(payload)

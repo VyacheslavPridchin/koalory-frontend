@@ -16,7 +16,7 @@ import ScreenGenreSelection from '@/components/screens/ScreenGenreSelection.vue'
 import ScreenStoryTheme from '@/components/screens/ScreenStoryTheme.vue'
 import ScreenFinalGeneration from '@/components/screens/ScreenFinalGeneration.vue'
 import ScreenStoryComplete from '@/components/screens/ScreenStoryComplete.vue'
-import ScreenBonusUpsell from '@/components/screens/ScreenBonusUpsell.vue'
+import ScreenBonusUpsell from '@/components/screens/old/ScreenBonusUpsell.vue'
 import ScreenSetupInformation from "@/components/screens/ScreenSetupInformation.vue";
 import AuthGoogleCallback from "@/components/screens/AuthGoogleCallback.vue";
 import ScreenPaymentResult from "@/components/screens/ScreenPaymentResult.vue";
@@ -43,7 +43,7 @@ const routes = [
   { path: '/story/custom-theme', component: ScreenStoryTheme },
   { path: '/story/generate', component: ScreenFinalGeneration },
   { path: '/story/complete', component: ScreenStoryComplete },
-  { path: '/story/bonus', component: ScreenBonusUpsell },
+  // { path: '/story/bonus', component: ScreenBonusUpsell },
   { path: '/account', component: Account },
   { path: '/:catchAll(.*)', redirect: '/' },
 
