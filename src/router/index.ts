@@ -56,7 +56,7 @@ export const router = createRouter({
 
 // Добавляем проверку авторизации
 router.beforeEach(async (to, from, next) => {
-  const publicPaths = ['/', '/auth', '/pricing']
+  const publicPaths = ['/', '/auth', '/pricing', '/auth/google-callback']
   const isPublic = publicPaths.includes(to.path)
 
   if (!isPublic && !isAuth.value) {
