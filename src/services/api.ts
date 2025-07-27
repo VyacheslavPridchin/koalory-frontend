@@ -107,8 +107,8 @@ export async function googleRegister(data: GoogleRequest): Promise<LoginResponse
     return unwrap(res)
 }
 
-export async function emailRegister(data: EmailRequest): Promise<LoginResponse> {
-    const res = await api.post<ApiResponse<LoginResponse>>('/register/email_register', data)
+export async function emailRegister(data: EmailRequest): Promise<void> {
+    const res = await api.post<ApiResponse<void>>('/register/email_register', data)
     return unwrap(res)
 }
 
