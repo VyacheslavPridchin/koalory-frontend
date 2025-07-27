@@ -73,8 +73,8 @@ const selected = ref<Lang['code']>('en')
 const loading = ref(false)
 const saved = ref(false)
 
-function goBack() {
-  router.back()
+function getLangLabel(code: Lang['code']): string {
+  return languages.find(l => l.code === code)?.label ?? code
 }
 
 async function onSubmit() {
@@ -88,7 +88,7 @@ async function onSubmit() {
     const target = available_stories > 0 ? '/story/generate' : '/pricing'
 
     if(available_stories > 0){
-      await submitStoryDetail( { job_id: jobId.value ?? -1, field_name: "story_language", value: selected.value });
+      await submitStoryDetail( { job_id: jobId.value ?? -1, field_name: "story_language", value: getLangLabel(selected.value), });
     }
 
     await router.push({ path: target, query: { job_id: String(jobId.value) }})
