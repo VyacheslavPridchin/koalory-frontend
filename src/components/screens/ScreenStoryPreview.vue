@@ -24,6 +24,7 @@
           Here's how their magical story begins...
         </p>
         <button
+            :disabled="!photoBlobUrl"
             @click="continueStory"
             class="mt-6 w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 rounded-lg text-lg shadow disabled:opacity-50 transition"
         >
@@ -40,7 +41,7 @@
 <script setup lang="ts">
 import {onBeforeUnmount, onMounted, ref} from 'vue'
 import {useRoute, useRouter} from 'vue-router'
-import {canContinueStories, getAvailableStories, getGeneratedPhoto} from '@/services/api'
+import {canContinueStories, getAvailableStories, getGeneratedPhoto, getInformation} from '@/services/api'
 import {cachePhotoUrl, getCachedPhotoUrl} from '@/services/photoCacheService'
 
 const router = useRouter()
@@ -87,8 +88,7 @@ async function fetchPhoto() {
   }
 }
 
-onMounted(() => {
-  name.value = localStorage.getItem("name")
+onMounted(async () => {
 
   // получаем job_id из query
   const raw = route.query.job_id
@@ -97,12 +97,14 @@ onMounted(() => {
       : Number(raw)
 
   if (!jobId.value) {
-    router.push('/story/setup')
+    await router.push('/story/setup')
     return
   }
 
+  name.value = (await getInformation(jobId.value)).name
+
   // сразу пробуем и запускаем интервал повторных попыток
-  fetchPhoto()
+  await fetchPhoto()
   intervalId = window.setInterval(fetchPhoto, 5000)
 })
 

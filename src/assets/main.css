@@ -52,16 +52,41 @@ body {
   height: auto;
 }
 
+html, body, #app {
+  min-height: 100dvh;
+}
+
+@supports (height: 100svh) {
+  html, body, #app {
+    min-height: 100svh;
+  }
+}
+
+#app {
+  display: flex;
+  flex-direction: column;
+  min-height: inherit;
+}
+
+/* Заполняет остаток, растягивается при переполнении */
+.justify-square {
+  display: flex;
+  flex-direction: column;
+  flex: 1 0 auto; /* занимает остаток и НЕ сжимается, растёт по контенту */
+  min-height: 0;
+}
+
+/* Десктоп/ландшафт: вертикальное центрирование */
 @media (min-aspect-ratio: 1/1) {
   .justify-square {
     justify-content: center;
-    min-height: 100vh;
   }
 }
 
+/* Мобильный/портрет: как раньше, сверху */
 @media (max-aspect-ratio: 1/1) {
   .justify-square {
+    justify-content: flex-start;
     padding-top: 0;
   }
 }
-

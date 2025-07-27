@@ -72,7 +72,7 @@
                 <input
                     type="range"
                     min="1"
-                    max="12"
+                    max="18"
                     v-model.number="age"
                 />
                 <input
@@ -128,7 +128,7 @@ const isLoading = ref(false)
 
 onMounted(async () => {
   if(!isAuth.value) await router.push('/auth')
-  if((await getAvailableStories()).available_stories == 0) await router.push('/account')
+  // if((await getAvailableStories()).available_stories == 0) await router.push('/pricing')
 })
 
 function handleFile(file: File) {

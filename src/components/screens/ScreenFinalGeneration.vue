@@ -57,7 +57,13 @@
 import {ref, computed, onMounted, onUnmounted} from 'vue'
 import {getCachedPhotoUrl} from "@/services/photoCacheService.ts";
 import {useRoute, useRouter} from "vue-router";
-import {canContinueStories, launchStoryGeneration, requestStory, submitStoryDetail} from "@/services/api.ts";
+import {
+  canContinueStories,
+  getInformation,
+  launchStoryGeneration,
+  requestStory,
+  submitStoryDetail
+} from "@/services/api.ts";
 
 const name = ref<string | null>(null)
 const genre = ref<string | null>(null)
@@ -69,7 +75,6 @@ const router = useRouter()
 const iv = ref<number>()
 
 onMounted(async () => {
-  name.value = localStorage.getItem('name')
   genre.value = localStorage.getItem('genre')
 
   const raw = route.query.job_id
@@ -81,6 +86,8 @@ onMounted(async () => {
     await router.push('/story/setup')
     return
   }
+
+  name.value = (await getInformation(jobId.value)).name
 
   const cached = await getCachedPhotoUrl(jobId.value)
   if (cached) {

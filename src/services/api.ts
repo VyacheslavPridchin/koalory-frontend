@@ -25,9 +25,30 @@ type ApiResponse<T> = {
 // Helper to unwrap ApiResponse or throw error
 function unwrap<T>(res: AxiosResponse<ApiResponse<T>>): T {
     const body = res.data
-    if (!body.success) throw new Error(body.error || 'API error')
+    if (!body.success) {
+        const raw = body.error
+
+        // Try to parse JSON error and fire event if parsable
+        try {
+            const parsed = JSON.parse(raw)
+            if (parsed && parsed.reason && parsed.target) {
+                window.dispatchEvent(new CustomEvent('koalory:notify', {
+                    detail: {
+                        title: 'Attention!',
+                        message: String(parsed.reason),
+                        target: String(parsed.target) as any,
+                    }
+                }))
+            }
+        } catch {
+            // ignore parse errors
+        }
+
+        throw new Error(raw || 'API error')
+    }
     return body.data
 }
+
 
 function unwrapNotCompletely<T>(res: AxiosResponse<ApiResponse<T>>): ApiResponse<T> {
     return res.data
@@ -187,10 +208,36 @@ export async function getAllStories(): Promise<StoriesResponse> {
     return unwrap(res)
 }
 
-// Healthcheck
-export async function healthcheck(): Promise<void> {
-    const res = await api.get<ApiResponse<void>>('/health')
+// Verification & Password Reset
+
+export interface CreateVerificationRequest { email: string }
+export async function createVerification(data: CreateVerificationRequest): Promise<void> {
+    const res = await api.post<ApiResponse<void>>('/verification/create', data)
     unwrap(res)
+}
+
+export interface VerifyCodeRequest { email: string; code: string }
+export async function verifyCode(data: VerifyCodeRequest): Promise<LoginResponse> {
+    const res = await api.post<ApiResponse<LoginResponse>>('/verification/verify', data)
+    return unwrap(res)
+}
+
+export interface ResetRequest { email: string }
+export async function requestPasswordReset(data: ResetRequest): Promise<void> {
+    const res = await api.post<ApiResponse<void>>('/auth/reset', data)
+    unwrap(res)
+}
+
+export interface ResetVerificationRequest { token: string; password: string }
+export async function resetPassword(data: ResetVerificationRequest): Promise<void> {
+    const res = await api.post<ApiResponse<void>>('/auth/reset_verification', data)
+    unwrap(res)
+}
+
+export interface InformationResponse { name: string }
+export async function getInformation(job_id: number): Promise<InformationResponse> {
+    const res = await api.post<ApiResponse<InformationResponse>>('/get_info?job_id=' + job_id)
+    return unwrap(res)
 }
 
 import { ref } from 'vue'

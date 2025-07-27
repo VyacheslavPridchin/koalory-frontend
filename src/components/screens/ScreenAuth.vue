@@ -17,10 +17,15 @@
               @click="signInWithGoogle"
               class="w-full bg-[#4285F4] hover:bg-blue-600 text-white font-bold py-3 rounded-lg flex items-center justify-center gap-2 shadow"
           >
-            <span>📧</span>
-            {{ mode === 'register' ? 'Continue with Gmail' : 'Sign in with Gmail' }}
+            <img
+                src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+                alt="Google"
+                class="w-5 h-5 bg-white rounded-full p-0.5"
+            />
+            {{ mode === 'register' ? 'Continue with Google' : 'Sign in with Google' }}
           </button>
         </div>
+
 
         <div class="flex items-center mb-5">
           <hr class="flex-1 border-gray-200" />
@@ -67,9 +72,13 @@
             {{ mode === 'register' ? 'Sign In' : 'Register' }}
           </a>
         </p>
-
+        <p class="text-center text-gray-500 text-sm mb-2">
+          <a @click.prevent="openRecovery" href="#" class="text-gray-400  underline">
+            Forgot your password?
+          </a>
+        </p>
         <div class="flex items-center justify-center mt-4">
-          <span class="text-xs sm:text-sm text-gray-400">
+          <span class="text-xs text-center sm:text-sm text-gray-400">
             🔒 Your data is safe with us. We use bank‑level encryption.
           </span>
         </div>
@@ -102,6 +111,11 @@ function toggleMode() {
   error.value = ''
 }
 
+
+async function openRecovery() {
+  await router.push("/auth/recovery")
+}
+
 // OAuth flow
 function signInWithGoogle() {
   const authEndpoint = 'https://accounts.google.com/o/oauth2/auth'
@@ -123,21 +137,23 @@ async function onEmailSubmit() {
 
     let tokens
     if (mode.value === 'register') {
-      tokens = await emailRegister({ email: email.value, password: hashed })
+      await emailRegister({ email: email.value, password: hashed })
+      localStorage.setItem('email', email.value)
+      await router.push('/auth/verification')
+      return
     } else {
       tokens = await emailLogin({ email: email.value, password: hashed })
+      localStorage.setItem('access_token', tokens.access_token)
+      localStorage.setItem('refresh_token', tokens.refresh_token)
+      localStorage.setItem('email', email.value)
+      updateAuthStatus()
     }
-
-    localStorage.setItem('access_token', tokens.access_token)
-    localStorage.setItem('refresh_token', tokens.refresh_token)
-    localStorage.setItem('email', email.value)
-    updateAuthStatus()
 
     if((await getAvailableStories()).available_stories > 0)
         await router.push('/story/setup')
     else
       await router.push('/account')
-    
+
     // emit next or redirect
     // e.g. router.push or emit('next')
   } catch (e: any) {

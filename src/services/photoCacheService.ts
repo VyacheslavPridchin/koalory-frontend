@@ -14,6 +14,11 @@ function makeCacheKey(id: number): Request {
     return new Request(`/photo-cache/${id}`)
 }
 
+function makeCacheKeyWithName(name: string): Request {
+    // виртуальный ключ как Request, фактически не запрашивается
+    return new Request(`/photo-cache/${name}`)
+}
+
 /**
  * Получает URL фотографии из кэша, если он там есть
  * @param id jobId
@@ -46,6 +51,22 @@ export async function cachePhotoUrl(id: number, photoLink: string): Promise<stri
     const blob = await resp.blob()
     return URL.createObjectURL(blob)
 }
+
+export async function cachePhotoUrlWithName(name: string, photoLink: string): Promise<string> {
+    const cache = await caches.open(CACHE_NAME)
+    const key = makeCacheKeyWithName(name)
+
+    const resp = await fetch(photoLink)
+    if (!resp.ok) throw new Error(`Failed to fetch image: ${resp.status}`)
+
+    // Кэшируем ответ
+    await cache.put(key, resp.clone())
+
+    const blob = await resp.blob()
+    return URL.createObjectURL(blob)
+}
+
+
 
 /**
  * Очищает кэшированное фото для конкретного jobId

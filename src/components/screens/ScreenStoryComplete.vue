@@ -1,7 +1,7 @@
 <template>
   <section class="justify-square flex flex-col px-4 py-6">
     <div class="flex justify-center w-full">
-      <div class="w-full max-w-4xl card flex flex-col items-center relative overflow-visible">
+      <div class="w-full max-w-4xl card flex flex-col items-center relative overflow-visible" style="border: none">
         <!-- Left layer: static flow, full width -->
         <div class="flex flex-col items-center md:items-start space-y-6 w-full">
           <h2 class="text-4xl font-semibold text-black text-center md:text-start">
@@ -46,26 +46,26 @@
             Story sent to: {{ email }}. Also check spam folder!
           </p>
           <div class="flex flex-wrap justify-center gap-2 md:justify-start md:space-x-3">
-            <button class="bg-orange-100 hover:bg-orange-200 text-gray-700 px-4 py-2 rounded-full text-xs md:text-sm font-semibold">
+            <div class="bg-orange-100 text-gray-700 px-4 py-2 rounded-full text-xs md:text-sm font-semibold">
               📱 Share with Friends
-            </button>
-            <button class="bg-blue-100 hover:bg-blue-200 text-gray-700 px-4 py-2 rounded-full text-xs md:text-sm font-semibold">
+            </div>
+            <div class="bg-blue-100 text-gray-700 px-4 py-2 rounded-full text-xs md:text-sm font-semibold">
               ⭐ Rate Us
-            </button>
-            <button class="bg-orange-100 hover:bg-orange-200 text-gray-700 px-4 py-2 rounded-full text-xs md:text-sm font-semibold">
+            </div>
+            <div class="bg-orange-100 text-gray-700 px-4 py-2 rounded-full text-xs md:text-sm font-semibold">
               💬 Leave Feedback
-            </button>
+            </div>
           </div>
 
         </div>
 
         <!-- Right layer: absolutely positioned, wider, vertically centered -->
-        <div class="absolute w-3/4 bottom-0 right-0 right-layer" style="pointer-events: none">
+        <div class="absolute bottom-0 right-0 right-layer" style="pointer-events: none; width: 71%">
           <div class="relative w-full h-full">
             <!-- scrollable content pane beneath the tablet -->
             <div class="absolute inset-0 overflow-hidden bg-white"
-                 style="z-index: 5; height: 65%; top: 51%; transform: translateY(-53%) translateX(87%) rotateZ(8deg); width: 51%; padding: 13px 10px 15px 8px;">
-              <div class="h-full overflow-y-auto p-4 space-y-4" style="pointer-events: visible">
+                 style="z-index: 5; height: 62.5%; top: 51%; transform: translateY(-53%) translateX(89.5%) rotateZ(8deg); width: 50%; padding: 0px 10px 0px 13px;">
+              <div class="h-full overflow-y-auto space-y-4" style="pointer-events: visible; padding: 0 1rem">
                 <h3 class="text-xl font-bold"> {{ storyTitle }} </h3>
                 <div
                     v-for="(item, idx) in mixedContent"
@@ -104,7 +104,7 @@
 
 <script setup lang="ts">
 import {computed, onMounted, ref} from 'vue';
-import {getAvailableStories, requestStory} from "@/services/api.ts";
+import {getAvailableStories, getInformation, requestStory} from "@/services/api.ts";
 import {useRoute, useRouter} from "vue-router";
 
 const name = ref<string | null>(null);
@@ -141,9 +141,12 @@ onMounted(async () => {
     return
   }
 
-  name.value = localStorage.getItem('name');
+  name.value = (await getInformation(jobId.value)).name
 
   const result = await requestStory(jobId.value ?? -1)
+
+
+
   storyTitle.value = result.title;
   pdfUrl.value = result.pdf_url;
   wordCount.value = result.word_count;

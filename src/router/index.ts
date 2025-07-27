@@ -22,10 +22,18 @@ import AuthGoogleCallback from "@/components/screens/AuthGoogleCallback.vue";
 import ScreenPaymentResult from "@/components/screens/ScreenPaymentResult.vue";
 import Account from "@/components/screens/Account.vue";
 import {isAuth} from "@/services/api.ts";
+import ScreenRecovery from "@/components/screens/ScreenRecovery.vue";
+import ScreenResetPassword from "@/components/screens/ScreenResetPassword.vue";
+import ScreenVerification from "@/components/screens/ScreenVerification.vue";
+import ScreenStoryLanguage from "@/components/screens/ScreenStoryLanguage.vue";
+import ScreenStoryMessage from "@/components/screens/ScreenStoryMessage.vue";
 
 const routes = [
   { path: '/', component: ScreenLanding },
   { path: '/auth', component: ScreenAuth },
+  { path: '/auth/recovery', component: ScreenRecovery },
+  { path: '/auth/reset', component: ScreenResetPassword },
+  { path: '/auth/verification', component: ScreenVerification },
   { path: '/auth/google-callback', component: AuthGoogleCallback },
   { path: '/story/setup', component: ScreenSetupInformation },
   // { path: '/upload', component: ScreenPhotoUpload },
@@ -40,7 +48,9 @@ const routes = [
   // { path: '/confirm', component: ScreenFreeConfirmation },
   { path: '/story/interests', component: ScreenInterestsHobbies },
   { path: '/story/genre', component: ScreenGenreSelection },
-  { path: '/story/custom-theme', component: ScreenStoryTheme },
+  { path: '/story/message', component: ScreenStoryMessage },
+  { path: '/story/theme', component: ScreenStoryTheme },
+  { path: '/story/language', component: ScreenStoryLanguage },
   { path: '/story/generate', component: ScreenFinalGeneration },
   { path: '/story/complete', component: ScreenStoryComplete },
   // { path: '/story/bonus', component: ScreenBonusUpsell },
@@ -56,7 +66,7 @@ export const router = createRouter({
 
 // Добавляем проверку авторизации
 router.beforeEach(async (to, from, next) => {
-  const publicPaths = ['/', '/auth', '/pricing', '/auth/google-callback']
+  const publicPaths = ['/', '/auth', '/pricing', '/auth/google-callback', '/auth/recovery', '/auth/reset', '/auth/verification']
   const isPublic = publicPaths.includes(to.path)
 
   if (!isPublic && !isAuth.value) {
