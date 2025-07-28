@@ -25,6 +25,7 @@
                 ref="inputs"
                 type="text"
                 inputmode="numeric"
+                autocomplete="one-time-code"
                 maxlength="1"
                 class="w-12 h-12 text-center text-xl rounded-md border border-gray-200 focus:border-violet-300 focus:ring-2 focus:ring-violet-200 outline-none"
                 :value="digits[i]"
@@ -85,7 +86,7 @@
 <script lang="ts" setup>
 import { ref, computed, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import {createVerification, getAvailableStories, isAuth, updateAuthStatus, verifyCode} from "@/services/api.ts";
+import { createVerification, getAvailableStories, isAuth, updateAuthStatus, verifyCode } from '@/services/api.ts'
 
 const router = useRouter()
 const route = useRoute()
@@ -119,6 +120,9 @@ const formattedCooldown = computed(() => {
   const ssStr = ss.toString().padStart(2, '0')
   return `${mmStr}:${ssStr}`
 })
+
+const isMobile = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent)
+let visibilityHandlerAttached = false
 
 function focusIndex(i: number) {
   const el = inputs.value?.[i]
@@ -201,6 +205,9 @@ function onKeydown(i: number, e: KeyboardEvent) {
 
 function onFocus(i: number) {
   selectIndex(i)
+  // На мобильных попробуем автозаполнение при первом фокусе,
+  // если код ещё не введён полностью.
+  maybeAutoPaste()
 }
 
 function onPaste(e: ClipboardEvent) {
@@ -236,7 +243,7 @@ async function onSubmit() {
 
     updateAuthStatus()
 
-    if((await getAvailableStories()).available_stories > 0)
+    if ((await getAvailableStories()).available_stories > 0)
       await router.push('/story/setup')
     else
       await router.push('/account')
@@ -262,10 +269,72 @@ function startCooldown(seconds: number) {
   }, 1000) as unknown as number
 }
 
+/** ======== АВТОВСТАВКА С МОБИЛЬНЫХ / ЧТЕНИЕ ИЗ БУФЕРА ========= */
+
+async function readClipboardText(): Promise<string> {
+  // iOS Safari не поддерживает navigator.permissions для clipboard-read.
+  // Делаем безопасную попытку чтения, ловим ошибки.
+  try {
+    const canAsk = typeof navigator.permissions?.query === 'function'
+    if (canAsk) {
+      // @ts-expect-error — нестандартное имя разрешения
+      const status = await navigator.permissions.query({ name: 'clipboard-read' })
+      if (status.state === 'denied') return ''
+      // Если 'prompt' или 'granted' — пробуем читать.
+    }
+    if (!('clipboard' in navigator) || typeof navigator.clipboard.readText !== 'function') return ''
+    const text = await navigator.clipboard.readText()
+    return text ?? ''
+  } catch {
+    return ''
+  }
+}
+
+function looksLikeOtp(text: string) {
+  const cleaned = text.replace(/\D+/g, '')
+  return cleaned.length >= 4 // допускаем 4-8 цифр; распределим первые 6
+}
+
+async function tryAutoPasteFromClipboard() {
+  const alreadyFull = codeValue.value.length === BOX_COUNT
+  if (alreadyFull) return
+
+  const text = await readClipboardText()
+  if (!text) return
+
+  if (looksLikeOtp(text)) {
+    distributeFrom(0, text)
+  }
+}
+
+function maybeAutoPaste() {
+  if (!isMobile) return
+  // Не спамим попытками: пробуем только если не заполнено и есть поддержка.
+  if (codeValue.value.length === BOX_COUNT) return
+  void tryAutoPasteFromClipboard()
+}
+
+function attachVisibilityAutoPaste() {
+  if (visibilityHandlerAttached) return
+  const handler = async () => {
+    if (document.visibilityState === 'visible') {
+      // Пользователь мог скопировать код в другом приложении/вкладке.
+      await tryAutoPasteFromClipboard()
+    }
+  }
+  document.addEventListener('visibilitychange', handler)
+  visibilityHandlerAttached = true
+
+  // Возвращаем функцию для отписки:
+  cleanupFns.push(() => document.removeEventListener('visibilitychange', handler))
+}
+
+/** ============================================================= */
+
 async function onResend() {
   if (cooldown.value > 0) return
-  if(!emailToShow) {
-    await router.push("/auth");
+  if (!emailToShow) {
+    await router.push('/auth')
     return
   }
   error.value = ''
@@ -273,6 +342,8 @@ async function onResend() {
   try {
     await createVerification({ email: emailToShow })
     startCooldown(RESEND_SECONDS)
+    // Сразу же попробуем автопаст после повтора отправки
+    maybeAutoPaste()
   } catch (e: any) {
     error.value = e?.response?.data?.error || e?.message || 'Failed to resend code'
   } finally {
@@ -280,14 +351,16 @@ async function onResend() {
   }
 }
 
+const cleanupFns: Array<() => void> = []
+
 onMounted(async () => {
-  if(isAuth.value) {
+  if (isAuth.value) {
     await router.push('/account')
     return
   }
 
-  if(!emailToShow) {
-    await router.push("/auth");
+  if (!emailToShow) {
+    await router.push('/auth')
     return
   }
 
@@ -300,7 +373,7 @@ onMounted(async () => {
 
   await createVerification({ email: emailToShow })
 
-  // Start initial 2-minute resend cooldown (since code has just been sent)
+  // Стартуем изначальный кулдаун на 2 минуты
   startCooldown(RESEND_SECONDS)
 
   await nextTick(() => {
@@ -309,10 +382,20 @@ onMounted(async () => {
     focusIndex(idx)
     selectIndex(idx)
   })
+
+  // Автопопытка вставки на мобильных сразу после монтирования.
+  if (isMobile) {
+    // Небольшая задержка, чтобы UI стабилизировался.
+    setTimeout(() => {
+      void tryAutoPasteFromClipboard()
+    }, 50)
+    attachVisibilityAutoPaste()
+  }
 })
 
 onBeforeUnmount(() => {
   if (cooldownTimer) window.clearInterval(cooldownTimer)
+  cleanupFns.forEach((fn) => fn())
 })
 </script>
 
