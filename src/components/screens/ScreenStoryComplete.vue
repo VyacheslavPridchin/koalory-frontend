@@ -146,7 +146,7 @@ onMounted(async () => {
   const result = await requestStory(jobId.value ?? -1)
 
   if(result.progress != 100){
-    await router.push('/story/generate')
+    await router.push('/story/generate?job_id=' + jobId.value)
   }
 
   storyTitle.value = result.title;
