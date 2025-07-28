@@ -17,7 +17,7 @@
         <form v-if="!verified" @submit.prevent="onSubmit" class="flex flex-col gap-6 mb-6">
           <div
               class="flex justify-center gap-2 select-none"
-              @paste.prevent="onPaste"
+              @paste.prevent="onContainerPaste"
           >
             <input
                 v-for="(_, i) in boxes"
@@ -32,6 +32,7 @@
                 @input="onInput(i, $event)"
                 @keydown="onKeydown(i, $event)"
                 @focus="onFocus(i)"
+                @paste.prevent="onInputPaste(i, $event)"
             />
           </div>
 
@@ -121,9 +122,6 @@ const formattedCooldown = computed(() => {
   return `${mmStr}:${ssStr}`
 })
 
-const isMobile = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent)
-let visibilityHandlerAttached = false
-
 function focusIndex(i: number) {
   const el = inputs.value?.[i]
   el?.focus()
@@ -152,7 +150,7 @@ function onInput(i: number, e: Event) {
   let val = target.value
 
   if (val.length > 1) {
-    distributeFrom(i, val)
+    distributeFrom(0, val)
     return
   }
 
@@ -168,6 +166,11 @@ function onInput(i: number, e: Event) {
 
 function onKeydown(i: number, e: KeyboardEvent) {
   const key = e.key
+
+  // Разрешаем Ctrl/Cmd + V для вставки
+  if ((e.ctrlKey || e.metaKey) && (key === 'v' || key === 'V')) {
+    return
+  }
 
   if (key === 'Backspace') {
     if (digits.value[i]) {
@@ -205,12 +208,16 @@ function onKeydown(i: number, e: KeyboardEvent) {
 
 function onFocus(i: number) {
   selectIndex(i)
-  // На мобильных попробуем автозаполнение при первом фокусе,
-  // если код ещё не введён полностью.
-  maybeAutoPaste()
 }
 
-function onPaste(e: ClipboardEvent) {
+function onInputPaste(i: number, e: ClipboardEvent) {
+  const text = e.clipboardData?.getData('text') ?? ''
+  const only = text.replace(/\D+/g, '')
+  if (!only) return
+  distributeFrom(0, only)
+}
+
+function onContainerPaste(e: ClipboardEvent) {
   const text = e.clipboardData?.getData('text') ?? ''
   distributeFrom(0, text)
 }
@@ -220,7 +227,7 @@ function distributeFrom(startIndex: number, text: string) {
   for (let j = 0; j < BOX_COUNT; j++) {
     const srcIdx = j - startIndex
     const ch = srcIdx >= 0 && srcIdx < onlyDigits.length ? onlyDigits[srcIdx] : ''
-    digits.value[j] = ch || digits.value[j]
+    digits.value[j] = ch || ''
   }
 
   const firstEmpty = digits.value.findIndex((d) => !d)
@@ -269,68 +276,6 @@ function startCooldown(seconds: number) {
   }, 1000) as unknown as number
 }
 
-/** ======== АВТОВСТАВКА С МОБИЛЬНЫХ / ЧТЕНИЕ ИЗ БУФЕРА ========= */
-
-async function readClipboardText(): Promise<string> {
-  // iOS Safari не поддерживает navigator.permissions для clipboard-read.
-  // Делаем безопасную попытку чтения, ловим ошибки.
-  try {
-    const canAsk = typeof navigator.permissions?.query === 'function'
-    if (canAsk) {
-      // @ts-expect-error — нестандартное имя разрешения
-      const status = await navigator.permissions.query({ name: 'clipboard-read' })
-      if (status.state === 'denied') return ''
-      // Если 'prompt' или 'granted' — пробуем читать.
-    }
-    if (!('clipboard' in navigator) || typeof navigator.clipboard.readText !== 'function') return ''
-    const text = await navigator.clipboard.readText()
-    return text ?? ''
-  } catch {
-    return ''
-  }
-}
-
-function looksLikeOtp(text: string) {
-  const cleaned = text.replace(/\D+/g, '')
-  return cleaned.length >= 4 // допускаем 4-8 цифр; распределим первые 6
-}
-
-async function tryAutoPasteFromClipboard() {
-  const alreadyFull = codeValue.value.length === BOX_COUNT
-  if (alreadyFull) return
-
-  const text = await readClipboardText()
-  if (!text) return
-
-  if (looksLikeOtp(text)) {
-    distributeFrom(0, text)
-  }
-}
-
-function maybeAutoPaste() {
-  if (!isMobile) return
-  // Не спамим попытками: пробуем только если не заполнено и есть поддержка.
-  if (codeValue.value.length === BOX_COUNT) return
-  void tryAutoPasteFromClipboard()
-}
-
-function attachVisibilityAutoPaste() {
-  if (visibilityHandlerAttached) return
-  const handler = async () => {
-    if (document.visibilityState === 'visible') {
-      // Пользователь мог скопировать код в другом приложении/вкладке.
-      await tryAutoPasteFromClipboard()
-    }
-  }
-  document.addEventListener('visibilitychange', handler)
-  visibilityHandlerAttached = true
-
-  // Возвращаем функцию для отписки:
-  cleanupFns.push(() => document.removeEventListener('visibilitychange', handler))
-}
-
-/** ============================================================= */
-
 async function onResend() {
   if (cooldown.value > 0) return
   if (!emailToShow) {
@@ -342,16 +287,12 @@ async function onResend() {
   try {
     await createVerification({ email: emailToShow })
     startCooldown(RESEND_SECONDS)
-    // Сразу же попробуем автопаст после повтора отправки
-    maybeAutoPaste()
   } catch (e: any) {
     error.value = e?.response?.data?.error || e?.message || 'Failed to resend code'
   } finally {
     loading.value = false
   }
 }
-
-const cleanupFns: Array<() => void> = []
 
 onMounted(async () => {
   if (isAuth.value) {
@@ -372,8 +313,6 @@ onMounted(async () => {
   }
 
   await createVerification({ email: emailToShow })
-
-  // Стартуем изначальный кулдаун на 2 минуты
   startCooldown(RESEND_SECONDS)
 
   await nextTick(() => {
@@ -382,20 +321,10 @@ onMounted(async () => {
     focusIndex(idx)
     selectIndex(idx)
   })
-
-  // Автопопытка вставки на мобильных сразу после монтирования.
-  if (isMobile) {
-    // Небольшая задержка, чтобы UI стабилизировался.
-    setTimeout(() => {
-      void tryAutoPasteFromClipboard()
-    }, 50)
-    attachVisibilityAutoPaste()
-  }
 })
 
 onBeforeUnmount(() => {
   if (cooldownTimer) window.clearInterval(cooldownTimer)
-  cleanupFns.forEach((fn) => fn())
 })
 </script>
 
