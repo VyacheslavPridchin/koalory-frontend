@@ -52,6 +52,24 @@ export async function cachePhotoUrl(id: number, photoLink: string): Promise<stri
     return URL.createObjectURL(blob)
 }
 
+export async function getOrCachePhotoUrlWithName(name: string, photoLink: string): Promise<string>{
+    // 1) проверяем кэш
+    const cached = await getCachedPhotoUrlWithName(name)
+    if (cached) {
+        return cached
+    }
+
+    return await cachePhotoUrlWithName(name, photoLink)
+}
+
+export async function getCachedPhotoUrlWithName(name: string): Promise<string | null> {
+    const cache = await caches.open(CACHE_NAME)
+    const match = await cache.match(makeCacheKeyWithName(name))
+    if (!match) return null
+    const blob = await match.blob()
+    return URL.createObjectURL(blob)
+}
+
 export async function cachePhotoUrlWithName(name: string, photoLink: string): Promise<string> {
     const cache = await caches.open(CACHE_NAME)
     const key = makeCacheKeyWithName(name)

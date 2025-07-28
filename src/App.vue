@@ -25,7 +25,7 @@ import { ref, watch, onMounted, onBeforeUnmount } from "vue";
 import { useRoute } from "vue-router";
 import Header from "@/components/Header.vue";
 import GlobalNotice from "@/components/GlobalNotice.vue";
-import { cachePhotoUrlWithName } from "@/services/photoCacheService";
+import {cachePhotoUrlWithName, getOrCachePhotoUrlWithName} from "@/services/photoCacheService";
 
 import bg1 from "@/assets/backgrounds/background_1-min.jpg";
 import bg2 from "@/assets/backgrounds/background_2-min.jpg";
@@ -53,7 +53,7 @@ async function preloadAll() {
   const results = await Promise.all(
       entries.map(async (e) => {
         try {
-          const blobUrl = await cachePhotoUrlWithName(e.name, e.url);
+          const blobUrl = await getOrCachePhotoUrlWithName(e.name, e.url);
           return blobUrl;
         } catch {
           return null;
