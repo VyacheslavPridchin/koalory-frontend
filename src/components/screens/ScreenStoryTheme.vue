@@ -78,19 +78,12 @@ onMounted(async () => {
 
 async function onContinue() {
   const { available_stories } = await canContinueStories()
-  const target = available_stories > 0 ? '/story/language' : '/pricing'
+  const target = available_stories > 0 ? '/story/message' : '/pricing'
 
   if(available_stories > 0){
     localStorage.setItem("theme", text.value);
     await submitStoryDetail( { job_id: jobId.value ?? -1, field_name: "story_theme", value: text.value });
   }
-
-  await router.push({ path: target, query: { job_id: String(jobId.value) }})
-}
-
-async function onSkip() {
-  const { available_stories } = await canContinueStories()
-  const target = available_stories > 0 ? '/story/language' : '/pricing'
 
   await router.push({ path: target, query: { job_id: String(jobId.value) }})
 }

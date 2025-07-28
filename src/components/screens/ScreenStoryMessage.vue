@@ -22,14 +22,14 @@
               @click="onSkip"
               class="w-1/2 mr-2 bg-white hover:bg-gray-100 text-gray-400 font-semibold py-3 rounded-lg text-lg border border-gray-300 shadow transition"
           >
-            Skip - Surprise Me!
+            Skip
           </button>
           <button
               :disabled="!text"
               @click="onContinue"
               class="w-1/2 ml-2 bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 rounded-lg text-lg shadow disabled:opacity-50 transition"
           >
-            Continue with Theme
+            Continue with Message
           </button>
         </div>
       </div>

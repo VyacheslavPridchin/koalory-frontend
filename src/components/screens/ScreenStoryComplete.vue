@@ -145,7 +145,9 @@ onMounted(async () => {
 
   const result = await requestStory(jobId.value ?? -1)
 
-
+  if(result.progress != 100){
+    await router.push('/story/generate')
+  }
 
   storyTitle.value = result.title;
   pdfUrl.value = result.pdf_url;
