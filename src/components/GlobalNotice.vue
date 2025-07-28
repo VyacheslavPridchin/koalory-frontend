@@ -31,19 +31,10 @@
 import { onMounted, onBeforeUnmount, reactive, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
-type TargetProgress =
-    | 'first_screen'
-    | 'generated_photo'
-    | 'story_theme'
-    | 'story_message'
-    | 'story_language'
-    | 'in_progress'
-    | 'finished'
-
 type NoticeDetail = {
   title?: string
   message: string
-  target: TargetProgress
+  target: string
 }
 
 const router = useRouter()
@@ -68,19 +59,17 @@ function go() {
 
   switch (current.target) {
     case 'first_screen':
-      router.push('/story/setup?job_id=' + jobId); break
-    case 'generated_photo':
-      router.push('/story/preview?job_id=' + jobId); break
-    case 'story_theme':
-      router.push('/story/genre?job_id=' + jobId); break
-    case 'story_message':
-      router.push('/story/theme?job_id=' + jobId); break
-    case 'story_language':
-      router.push('/story/language?job_id=' + jobId); break
+      router.push('/story/setup?job_id=' + jobId);
+      break;
+    case 'preview':
+      router.push('/story/preview?job_id=' + jobId);
+      break;
     case 'in_progress':
-      router.push('/story/generate?job_id=' + jobId); break
-    case 'finished':
-      router.push('/story/complete?job_id=' + jobId); break
+      router.push('/story/generate?job_id=' + jobId);
+      break;
+    case 'final':
+      router.push('/story/complete?job_id=' + jobId);
+      break;
   }
 
   visible.value = false

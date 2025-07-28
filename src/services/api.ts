@@ -1,6 +1,7 @@
 // src/services/api.ts
 import axios, { type AxiosInstance, type AxiosResponse } from 'axios'
 import router from '@/router'
+import { ref } from 'vue'
 
 // Koalory API base URL
 const api: AxiosInstance = axios.create({
@@ -22,33 +23,40 @@ type ApiResponse<T> = {
     error: string
 }
 
+// Common notifier for JSON errors with { reason, target }
+function notifyFromErrorValue(val: unknown) {
+    let obj: any = null
+
+    if (val && typeof val === 'object') {
+        obj = val
+    } else if (typeof val === 'string') {
+        try {
+            obj = JSON.parse(val)
+        } catch {
+            obj = null
+        }
+    }
+
+    if (obj && obj.reason && obj.target) {
+        window.dispatchEvent(new CustomEvent('koalory:notify', {
+            detail: {
+                title: 'Attention!',
+                message: String(obj.reason),
+                target: String(obj.target) as any,
+            }
+        }))
+    }
+}
+
 // Helper to unwrap ApiResponse or throw error
 function unwrap<T>(res: AxiosResponse<ApiResponse<T>>): T {
     const body = res.data
     if (!body.success) {
-        const raw = body.error
-
-        // Try to parse JSON error and fire event if parsable
-        try {
-            const parsed = JSON.parse(raw)
-            if (parsed && parsed.reason && parsed.target) {
-                window.dispatchEvent(new CustomEvent('koalory:notify', {
-                    detail: {
-                        title: 'Attention!',
-                        message: String(parsed.reason),
-                        target: String(parsed.target) as any,
-                    }
-                }))
-            }
-        } catch {
-            // ignore parse errors
-        }
-
-        throw new Error(raw || 'API error')
+        notifyFromErrorValue(body.error)
+        throw new Error(body.error || 'API error')
     }
     return body.data
 }
-
 
 function unwrapNotCompletely<T>(res: AxiosResponse<ApiResponse<T>>): ApiResponse<T> {
     return res.data
@@ -93,11 +101,6 @@ export async function refreshToken(refresh_token: string): Promise<LoginResponse
         null,
         { params: { refresh_token } }
     )
-    return unwrap(res)
-}
-
-export async function testAuth(): Promise<LoginResponse> {
-    const res = await api.post<ApiResponse<LoginResponse>>('/auth/test_auth')
     return unwrap(res)
 }
 
@@ -187,7 +190,6 @@ export async function canContinueStories(): Promise<AvailableStoriesResponse> {
     return unwrap(res)
 }
 
-
 export async function launchStoryGeneration (data: LaunchStoryGenerationRequest): Promise<SuccessfulSubmission> {
     const res = await api.post<ApiResponse<SuccessfulSubmission>>(`/story/launch_story_generation?job_id=${data.job_id}`)
     return unwrap(res)
@@ -240,12 +242,9 @@ export async function getInformation(job_id: number): Promise<InformationRespons
     return unwrap(res)
 }
 
-import { ref } from 'vue'
-
 export const isAuth = ref(checkAuth())
 
 export function checkAuth(): boolean {
-    // console.log(localStorage.getItem('refresh_token'), localStorage.getItem('access_token'), !!localStorage.getItem('refresh_token') || !!localStorage.getItem('access_token'))
     return !!localStorage.getItem('refresh_token') || !!localStorage.getItem('access_token')
 }
 
@@ -263,9 +262,23 @@ export async function logOut(): Promise<void> {
 // Response interceptor: auto-refresh token on expired signature
 api.interceptors.response.use(
     response => response,
-    async error => {
-        const originalRequest = (error.config as any)
-        const errMsg = error.response?.data?.error || error.message
+    async (error: any) => {
+        const originalRequest = error.config || {}
+        const res = error.response
+        const payload = res?.data
+        const rawErrValue = (payload && typeof payload === 'object')
+            ? (payload as any).error ?? payload
+            : payload ?? error.message
+
+        // Fire notification if error contains JSON { reason, target }
+        notifyFromErrorValue(rawErrValue)
+
+        const errMsg = String(
+            (payload && typeof payload === 'object' && (payload as any).error)
+            ?? error.message
+            ?? ''
+        )
+
         if (!originalRequest._retry && errMsg === 'Signature has expired') {
             originalRequest._retry = true
             const refreshTokenStr = localStorage.getItem('refresh_token')
@@ -276,6 +289,7 @@ api.interceptors.response.use(
                     localStorage.setItem('refresh_token', tokens.refresh_token)
                     updateAuthStatus()
                     api.defaults.headers['Authorization'] = `Bearer ${tokens.access_token}`
+                    if (!originalRequest.headers) originalRequest.headers = {}
                     originalRequest.headers['Authorization'] = `Bearer ${tokens.access_token}`
                     return api(originalRequest)
                 } catch {
@@ -287,6 +301,7 @@ api.interceptors.response.use(
                 }
             }
         }
+
         return Promise.reject(error)
     }
 )

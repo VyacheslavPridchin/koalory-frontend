@@ -135,19 +135,13 @@ function openTale(tale: Tale) {
     case 'first_screen':
       router.push('/story/setup?job_id=' + tale.id);
       break;
-    case 'generated_photo':
+    case 'preview':
       router.push('/story/preview?job_id=' + tale.id);
-      break;
-    case 'story_theme':
-      router.push('/story/genre?job_id=' + tale.id);
-      break;
-    case 'story_message':
-      router.push('/story/theme?job_id=' + tale.id);
       break;
     case 'in_progress':
       router.push('/story/generate?job_id=' + tale.id);
       break;
-    case 'finished':
+    case 'final':
       router.push('/story/complete?job_id=' + tale.id);
       break;
   }
