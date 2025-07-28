@@ -1,19 +1,21 @@
 <template>
-  <div v-if="route.path !== '/'" class="header-container">
-    <div class="logo-wrapper">
-      <img src="@/assets/logo.svg" alt="Logo" class="logo" />
-    </div>
-
-    <transition name="fade">
-      <div
-          v-if="isAuth && route.path !== '/account'"
-          class="menu-icon-wrapper"
-          @click="onMenuClick"
-      >
-        <img src="@/assets/icon-dots.svg" alt="Menu" class="menu-icon" />
+  <transition name="slide" appear>
+    <div v-if="route.path !== '/'" class="header-container">
+      <div class="logo-wrapper">
+        <img src="@/assets/logo.svg" alt="Logo" class="logo" />
       </div>
-    </transition>
-  </div>
+
+      <transition name="fade">
+        <div
+            v-if="isAuth && route.path !== '/account'"
+            class="menu-icon-wrapper"
+            @click="onMenuClick"
+        >
+          <img src="@/assets/icon-dots.svg" alt="Menu" class="menu-icon" />
+        </div>
+      </transition>
+    </div>
+  </transition>
 </template>
 
 <script setup lang="ts">
@@ -31,7 +33,7 @@ const onMenuClick = () => {
 <style scoped>
 .header-container {
   display: grid;
-  grid-template-columns: 1fr auto 1fr; /* центр всегда во 2-й колонке */
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
   justify-items: center;
   width: 100%;
@@ -39,7 +41,18 @@ const onMenuClick = () => {
   padding: 0 1rem;
   box-sizing: border-box;
   z-index: 1000;
-  position: relative;
+
+  /* Десктоп по умолчанию: абсолютный, вне потока */
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+/* Мобильные/высокие экраны: возвращаем в поток лэйаута */
+@media (max-aspect-ratio: 1/1) {
+  .header-container {
+    position: relative;
+  }
 }
 
 .logo-wrapper {
@@ -80,12 +93,25 @@ const onMenuClick = () => {
   height: 25px;
 }
 
+/* Fade для иконки меню */
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.3s ease;
 }
 .fade-enter-from,
 .fade-leave-to {
+  opacity: 0;
+}
+
+/* Slide для всего Header */
+.slide-enter-active,
+.slide-leave-active {
+  transition: transform 0.35s ease, opacity 0.35s ease;
+  will-change: transform, opacity;
+}
+.slide-enter-from,
+.slide-leave-to {
+  transform: translateY(-100%);
   opacity: 0;
 }
 </style>

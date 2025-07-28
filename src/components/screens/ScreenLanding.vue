@@ -1,7 +1,7 @@
 <template>
   <div class="page">
     <div class="hero-panel">
-      <img src="../../assets/logo.svg" alt="Logo" class="logo" />
+      <img src="@/assets/logo.svg" alt="Logo" class="logo" />
 
       <!-- Decorative ovals -->
       <div class="oval oval-1"></div>
@@ -26,9 +26,9 @@
       </div>
 
       <div class="trustpilot-badge">
-        <img src="../../assets/trustpilot-logo.svg" alt="" class="tp-logo" />
+        <img src="@/assets/trustpilot-logo.svg" alt="" class="tp-logo" />
         <div class="tp-stars-wrapper">
-          <img v-for="n in 5" :key="n" src="../../assets/trustpilot-star.svg" alt="Rating" class="tp-stars" />
+          <img v-for="n in 5" :key="n" src="@/assets/trustpilot-star.svg" alt="Rating" class="tp-stars" />
         </div>
         <span class="tp-reviews">Reviews 296</span>
       </div>
@@ -222,8 +222,6 @@ onMounted(async () => {
   flex-shrink: 0;
 }
 
-
-
 .tp-reviews {
   color: #04DA8D;
   font-family: "Inter", sans-serif;
@@ -261,13 +259,16 @@ onMounted(async () => {
   pointer-events: none;
 }
 
-.floating-left {
-  animation: floating-left 3.5s ease-in-out infinite;
+@media (min-aspect-ratio: 1/1) {
+  .floating-left {
+    animation: floating-left 3.5s ease-in-out infinite;
+  }
+
+  .floating-right {
+    animation: floating-right 3s ease-in-out infinite;
+  }
 }
 
-.floating-right {
-  animation: floating-right 3s ease-in-out infinite;
-}
 
 @keyframes floating-left {
   0% { transform: translateY(0px) rotate(-10deg);}
@@ -285,6 +286,7 @@ onMounted(async () => {
   width: calc(400px - (1920px - 100vw) * 0.1);
   left: calc(5% - (1920px - 100vw) * 0.15);
   top: 50%;
+  transform: rotate(-18deg);
 }
 
 .right-image {

@@ -22,7 +22,7 @@
                 alt="Google"
                 class="w-5 h-5 bg-white rounded-full p-0.5"
             />
-            {{ mode === 'register' ? 'Continue with Google' : 'Sign in with Google' }}
+            Continue with Google
           </button>
         </div>
 

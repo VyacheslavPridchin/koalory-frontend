@@ -19,11 +19,11 @@
             <label
                 v-for="lang in languages"
                 :key="lang.code"
-                class="flex items-start gap-3 p-3 rounded-lg border border-gray-200 hover:border-violet-300 cursor-pointer transition-colors"
+                class="flex items-start gap-3 p-3 rounded-lg border border-gray-200 hover:border-orange-300 cursor-pointer transition-colors"
             >
               <input
                   type="radio"
-                  class="mt-1 w-5 h-5 accent-violet-600"
+                  class="mt-1 w-5 h-5 accent-orange-600"
                   v-model="selected"
                   :value="lang.code"
                   :aria-label="lang.label"

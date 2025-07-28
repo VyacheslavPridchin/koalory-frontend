@@ -245,7 +245,7 @@ import { ref } from 'vue'
 export const isAuth = ref(checkAuth())
 
 export function checkAuth(): boolean {
-    console.log(localStorage.getItem('refresh_token'), localStorage.getItem('access_token'), !!localStorage.getItem('refresh_token') || !!localStorage.getItem('access_token'))
+    // console.log(localStorage.getItem('refresh_token'), localStorage.getItem('access_token'), !!localStorage.getItem('refresh_token') || !!localStorage.getItem('access_token'))
     return !!localStorage.getItem('refresh_token') || !!localStorage.getItem('access_token')
 }
 

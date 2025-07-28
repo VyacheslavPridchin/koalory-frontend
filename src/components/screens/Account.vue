@@ -1,10 +1,10 @@
 <template>
-  <section class="justify-square flex flex-col px-4 py-6">
+  <section class="justify-square flex flex-col px-4 py-12">
     <div class="flex justify-center w-full">
       <transition name="fade">
       <div v-if="isLoaded" class="w-full max-w-5xl">
         <!-- Header -->
-        <div class="flex justify-between items-center mb-6 mt-8 max-w-6xl mx-auto">
+        <div class="flex justify-between items-center mb-6 max-w-6xl mx-auto">
           <h1 class="text-2xl font-bold text-gray-800">Your Tales 📚</h1>
           <div class="flex items-center space-x-4 text-sm text-gray-700">
             <span>
