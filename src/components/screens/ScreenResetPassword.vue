@@ -37,10 +37,10 @@
                 required
                 minlength="8"
             />
+            <p v-if="passwordMismatch" class="text-sm text-red-500 mt-1">Passwords must match</p>
           </div>
 
           <button
-
               type="submit"
               :disabled="isDisabled"
               class="w-full bg-orange-500 hover:bg-orange-600 disabled:opacity-60 disabled:cursor-not-allowed text-white font-bold py-3 rounded-lg text-base sm:text-lg shadow"
@@ -87,11 +87,12 @@ const resetTokenParam = route.query.reset_token as string | string[] | undefined
 const token = Array.isArray(resetTokenParam) ? resetTokenParam[0] : (resetTokenParam ?? '')
 
 const password = ref<string>('')
-
 const confirm = ref<string>('')
 const error = ref<string>('')
 const loading = ref<boolean>(false)
 const success = ref<boolean>(false)
+
+const passwordMismatch = computed(() => confirm.value.length > 0 && password.value !== confirm.value)
 
 const isDisabled = computed(() =>
     loading.value ||
@@ -123,9 +124,7 @@ async function onSubmit() {
   loading.value = true
   try {
     const hashed = await sha256Hex(password.value)
-
     await resetPassword({ token: token, password: hashed })
-
     success.value = true
   } catch (e: any) {
     error.value = e?.response?.data?.error || e?.message || 'Failed to update password'
@@ -135,7 +134,7 @@ async function onSubmit() {
 }
 
 onMounted(async () => {
-  if(isAuth.value) {
+  if (isAuth.value) {
     await router.push('/account')
   }
 })
