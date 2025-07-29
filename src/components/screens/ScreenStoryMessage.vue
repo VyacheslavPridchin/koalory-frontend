@@ -38,7 +38,7 @@
               @click="onContinue"
               class="w-1/2 ml-2 bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 rounded-lg text-lg shadow disabled:opacity-50 transition"
           >
-            Continue with Message
+            Continue
           </button>
         </div>
       </div>
