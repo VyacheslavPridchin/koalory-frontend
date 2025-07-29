@@ -96,7 +96,7 @@ async function onContinue() {
 
 async function onSkip() {
   const { available_stories } = await canContinueStories()
-  const target = available_stories > 0 ? '/story/language' : '/pricing'
+  const target = available_stories > 0 ? '/story/generate' : '/pricing'
 
   await router.push({ path: target, query: { job_id: String(jobId.value) }})
 }
