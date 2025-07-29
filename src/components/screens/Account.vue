@@ -59,7 +59,7 @@
                 @click="openTale(tale)"
                 class="bg-white rounded-xl shadow p-3 flex flex-col justify-between cursor-pointer
                      h-full min-h-[260px] transition duration-200 ease-out
-                     hover:-translate-y-1 hover:scale-[1.03] active:scale-[0.97]"
+                     hover:-translate-y-1 hover:scale-[1.03] hover:shadow-md active:scale-[0.97]"
             >
               <div
                   class="rounded-md aspect-[5/6] mb-3 relative overflow-hidden"
