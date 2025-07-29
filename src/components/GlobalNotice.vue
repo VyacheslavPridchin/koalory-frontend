@@ -20,7 +20,7 @@
             @click="go"
             class="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 rounded-lg text-base sm:text-lg shadow"
         >
-          Continue
+          Try again
         </button>
       </div>
     </div>
