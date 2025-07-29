@@ -26,6 +26,7 @@ import ScreenResetPassword from "@/components/screens/ScreenResetPassword.vue";
 import ScreenVerification from "@/components/screens/ScreenVerification.vue";
 import ScreenStoryLanguage from "@/components/screens/ScreenStoryLanguage.vue";
 import ScreenStoryMessage from "@/components/screens/ScreenStoryMessage.vue";
+import MadeBy from "@/components/screens/MadeBy.vue";
 
 const routes = [
   { path: '/', component: ScreenLanding },
@@ -54,6 +55,7 @@ const routes = [
   { path: '/story/complete', component: ScreenStoryComplete },
   // { path: '/story/bonus', component: ScreenBonusUpsell },
   { path: '/account', component: Account },
+  { path: '/made_by', component: MadeBy },
   { path: '/:catchAll(.*)', redirect: '/' },
 
 ]
@@ -65,7 +67,7 @@ export const router = createRouter({
 
 // Добавляем проверку авторизации
 router.beforeEach(async (to, from, next) => {
-  const publicPaths = ['/', '/auth', '/pricing', '/auth/google-callback', '/auth/recovery', '/auth/reset', '/auth/verification']
+  const publicPaths = ['/', '/auth', '/pricing', '/auth/google-callback', '/auth/recovery', '/auth/reset', '/auth/verification', '/made_by']
   const isPublic = publicPaths.includes(to.path)
 
   if (!isPublic && !isAuth.value) {
