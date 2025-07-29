@@ -59,12 +59,12 @@
             >
               ⭐ Rate Us
             </button>
-            <button
-                class="bg-orange-100 text-gray-700 px-4 py-2 rounded-full text-xs md:text-sm font-semibold"
-                @click="openTrustpilot"
-            >
-              💬 Leave Feedback
-            </button>
+<!--            <button-->
+<!--                class="bg-orange-100 text-gray-700 px-4 py-2 rounded-full text-xs md:text-sm font-semibold"-->
+<!--                @click="openTrustpilot"-->
+<!--            >-->
+<!--              💬 Leave Feedback-->
+<!--            </button>-->
           </div>
         </div>
 

@@ -77,7 +77,9 @@ const options = [
 ]
 
 function select(value: { value: string, label: string }) {
+  console.log(value)
   selectedGenre.value.value = value.value
+  selectedGenre.value.label = value.label
 }
 
 async function saveGenre() {

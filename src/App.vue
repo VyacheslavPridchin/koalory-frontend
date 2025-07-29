@@ -41,7 +41,7 @@ import bg10 from "@/assets/backgrounds/background_10-min.jpg";
 const srcList = [bg1, bg2, bg3, bg4, bg5, bg6, bg7, bg8, bg9, bg10];
 const entries = srcList.map((url, i) => ({ url, name: `bg-${i + 1}` }));
 
-const excludedPaths = ["/", "/account", "/pricing"];
+const excludedPaths = ["/", "/account"];
 
 const route = useRoute();
 const backgroundImage = ref<string | null>(null);
