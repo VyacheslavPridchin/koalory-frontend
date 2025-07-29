@@ -67,7 +67,7 @@ function go() {
     case 'in_progress':
       router.push('/story/generate?job_id=' + jobId);
       break;
-    case 'final':
+    case 'finished':
       router.push('/story/complete?job_id=' + jobId);
       break;
   }

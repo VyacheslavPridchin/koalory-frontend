@@ -141,7 +141,7 @@ function openTale(tale: Tale) {
     case 'in_progress':
       router.push('/story/generate?job_id=' + tale.id);
       break;
-    case 'final':
+    case 'finished':
       router.push('/story/complete?job_id=' + tale.id);
       break;
   }
