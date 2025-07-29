@@ -12,11 +12,11 @@ import ScreenStoryPreview from '@/components/screens/ScreenStoryPreview.vue'
 import ScreenPricing from '@/components/screens/ScreenPricing.vue'
 import ScreenFreeConfirmation from '@/components/screens/old/ScreenFreeConfirmation.vue'
 import ScreenInterestsHobbies from '@/components/screens/ScreenInterestsHobbies.vue'
-import ScreenThemeSelection from '@/components/screens/ScreenThemeSelection.vue'
-import ScreenFinalGeneration from '@/components/screens/ScreenFinalGeneration.vue'
+import ScreenThemeSelection from '@/components/screens/ScreenStoryThemeSelection.vue'
+import ScreenStoryGenerate from '@/components/screens/ScreenStoryGenerate.vue'
 import ScreenStoryComplete from '@/components/screens/ScreenStoryComplete.vue'
 import ScreenBonusUpsell from '@/components/screens/old/ScreenBonusUpsell.vue'
-import ScreenSetupInformation from "@/components/screens/ScreenSetupInformation.vue";
+import ScreenStorySetup from "@/components/screens/ScreenStorySetup.vue";
 import AuthGoogleCallback from "@/components/screens/AuthGoogleCallback.vue";
 import ScreenPaymentResult from "@/components/screens/ScreenPaymentResult.vue";
 import Account from "@/components/screens/Account.vue";
@@ -34,7 +34,7 @@ const routes = [
   { path: '/auth/reset', component: ScreenResetPassword },
   { path: '/auth/verification', component: ScreenVerification },
   { path: '/auth/google-callback', component: AuthGoogleCallback },
-  { path: '/story/setup', component: ScreenSetupInformation },
+  { path: '/story/setup', component: ScreenStorySetup },
   // { path: '/upload', component: ScreenPhotoUpload },
   // { path: '/preview', component: ScreenCharacterPreview },
   // { path: '/name', component: ScreenCharacterName },
@@ -50,7 +50,7 @@ const routes = [
   { path: '/story/interests', component: ScreenInterestsHobbies },
   { path: '/story/theme', component: ScreenThemeSelection },
   { path: '/story/message', component: ScreenStoryMessage },
-  { path: '/story/generate', component: ScreenFinalGeneration },
+  { path: '/story/generate', component: ScreenStoryGenerate },
   { path: '/story/complete', component: ScreenStoryComplete },
   // { path: '/story/bonus', component: ScreenBonusUpsell },
   { path: '/account', component: Account },

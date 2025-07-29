@@ -114,6 +114,7 @@ onMounted(async () => {
       }
     } catch (e) {
       console.error("Error polling story:", e)
+      clearInterval(iv.value)
     }
   }, 1000)
 })
