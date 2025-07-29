@@ -110,7 +110,7 @@ onMounted(async () => {
 
 async function continueStory(): Promise<void> {
   const { available_stories } = await canContinueStories()
-  const target = available_stories > 0 ? '/story/interests' : '/pricing'
+  const target = available_stories > 0 ? '/story/language' : '/pricing'
   await router.push({ path: target, query: { job_id: String(jobId.value) } })
 }
 

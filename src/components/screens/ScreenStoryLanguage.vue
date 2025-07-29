@@ -85,7 +85,7 @@ async function onSubmit() {
     saved.value = true
 
     const { available_stories } = await canContinueStories()
-    const target = available_stories > 0 ? '/story/generate' : '/pricing'
+    const target = available_stories > 0 ? '/story/interests' : '/pricing'
 
     if(available_stories > 0){
       await submitStoryDetail( { job_id: jobId.value ?? -1, field_name: "story_language", value: getLangLabel(selected.value), });

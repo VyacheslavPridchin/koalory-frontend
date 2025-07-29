@@ -12,8 +12,7 @@ import ScreenStoryPreview from '@/components/screens/ScreenStoryPreview.vue'
 import ScreenPricing from '@/components/screens/ScreenPricing.vue'
 import ScreenFreeConfirmation from '@/components/screens/old/ScreenFreeConfirmation.vue'
 import ScreenInterestsHobbies from '@/components/screens/ScreenInterestsHobbies.vue'
-import ScreenGenreSelection from '@/components/screens/ScreenGenreSelection.vue'
-import ScreenStoryTheme from '@/components/screens/ScreenStoryTheme.vue'
+import ScreenThemeSelection from '@/components/screens/ScreenThemeSelection.vue'
 import ScreenFinalGeneration from '@/components/screens/ScreenFinalGeneration.vue'
 import ScreenStoryComplete from '@/components/screens/ScreenStoryComplete.vue'
 import ScreenBonusUpsell from '@/components/screens/old/ScreenBonusUpsell.vue'
@@ -46,11 +45,11 @@ const routes = [
   { path: '/pricing', component: ScreenPricing },
   { path: '/payment', component: ScreenPaymentResult },
   // { path: '/confirm', component: ScreenFreeConfirmation },
-  { path: '/story/interests', component: ScreenInterestsHobbies },
-  { path: '/story/genre', component: ScreenGenreSelection },
-  { path: '/story/message', component: ScreenStoryMessage },
-  { path: '/story/theme', component: ScreenStoryTheme },
   { path: '/story/language', component: ScreenStoryLanguage },
+
+  { path: '/story/interests', component: ScreenInterestsHobbies },
+  { path: '/story/theme', component: ScreenThemeSelection },
+  { path: '/story/message', component: ScreenStoryMessage },
   { path: '/story/generate', component: ScreenFinalGeneration },
   { path: '/story/complete', component: ScreenStoryComplete },
   // { path: '/story/bonus', component: ScreenBonusUpsell },

@@ -55,7 +55,7 @@ const router = useRouter()
 async function saveInterest() {
 
   const { available_stories } = await canContinueStories()
-  const target = available_stories > 0 ? '/story/genre' : '/pricing'
+  const target = available_stories > 0 ? '/story/theme' : '/pricing'
 
   if(available_stories > 0) {
     localStorage.setItem("interest", text.value);

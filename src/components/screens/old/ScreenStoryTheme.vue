@@ -16,15 +16,7 @@
             placeholder="e.g., Family love..."
             class="w-full px-5 py-4 rounded-xl border border-orange-200 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-200 text-base mb-3"
         ></textarea>
-        <div class="text-sm mb-4 p-4 text-left w-full rounded-lg" style="background-color: #FFF2E6">
-          <p class="font-semibold">Popular themes:</p>
-          <ul class="text-gray-700 text-s">
-            <li class="flex items-center"><span class="mr-1 text-sm text-black">★</span>Friendship & teamwork</li>
-            <li class="flex items-center"><span class="mr-1 text-sm text-black">★</span>Kindness & helping others, Overcoming fears</li>
-            <li class="flex items-center"><span class="mr-1 text-sm text-black">★</span>Family love, Being unique & special, Never giving up</li>
-            <li class="flex items-center text-xs mt-2" style="color: #FC7B00">Or write your own idea - just a few words is perfect!</li>
-          </ul>
-        </div>
+
         <!-- Buttons row -->
         <div class="flex justify-between w-full">
           <button
