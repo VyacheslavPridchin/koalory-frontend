@@ -4,7 +4,7 @@
       <h2 class="text-4xl font-extrabold text-white text-center mb-2 md:text-3xl offset-y text-shadow">
         Unlock the Full Adventure!
       </h2>
-      <p class="text-lg text-gray-600 text-white text-center mb-8 text-shadow">
+      <p class="text-lg text-white text-center mb-8 text-shadow">
         Choose your package to continue the magic.
       </p>
 
