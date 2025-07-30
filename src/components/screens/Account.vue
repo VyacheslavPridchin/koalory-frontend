@@ -164,6 +164,7 @@ function isValidImageUrl(url: string): boolean {
 }
 
 onMounted(async () => {
+
   availableToCreate.value = (await getAvailableStories()).available_stories;
   const stories = await getAllStories();
 

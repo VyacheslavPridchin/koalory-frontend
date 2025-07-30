@@ -8,11 +8,11 @@
       <div class="absolute inset-0 bg-black/60" />
 
       <div class="relative w-full max-w-md card bg-white rounded-2xl shadow-xl p-6 sm:p-8 z-[10000]">
-        <h2 class="text-2xl sm:text-3xl font-bold text-center mb-3">
+        <h2 class="text-2xl sm:text-3xl font-bold text-center mb-1">
           {{ current.title || 'Attention' }}
         </h2>
 
-        <p class="text-base sm:text-lg text-center mb-8 text-gray-600 whitespace-pre-line">
+        <p class="text-base sm:text-lg text-center mb-2 text-gray-600 whitespace-pre-line">
           {{ current.message }}
         </p>
 

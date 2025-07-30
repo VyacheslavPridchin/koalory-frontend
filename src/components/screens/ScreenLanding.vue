@@ -20,9 +20,7 @@
 
         <p class="subtitle">AI-generated personalized fairytales in 5 minutes</p>
 
-        <button @click="startCreating"  class="cta">Start for free</button>
-
-        <p class="note">No credit card required • First story completely free</p>
+        <button @click="startCreating"  class="cta">Start</button>
       </div>
 
       <div class="trustpilot-badge">
