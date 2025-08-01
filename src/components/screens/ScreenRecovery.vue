@@ -46,7 +46,7 @@
 
         <p class="text-center text-gray-500 text-sm mb-2">
           <a @click.prevent="goBack" href="#" class="text-violet-600 font-bold underline">
-            ← Back
+            Back
           </a>
         </p>
 

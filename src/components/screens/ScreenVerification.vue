@@ -55,7 +55,7 @@
             </button>
 
             <a href="#" @click.prevent="goBack" class="text-gray-400 underline">
-              ← Back
+              Back
             </a>
           </div>
         </form>
@@ -68,7 +68,7 @@
             Continue
           </button>
           <a href="#" @click.prevent="goBack" class="text-center text-violet-600 font-bold underline">
-            ← Back
+            Back
           </a>
         </div>
 
